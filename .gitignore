@@ -1,0 +1,8 @@
+.idea/
+plan
+*.iml
+*tfstate*
+.terraform/
+clojurians_log_secrets.yml
+*.log
+.vagrant/
