@@ -13,14 +13,19 @@ This is a work in progress and is subject to significant changes over time.
 - Get an account on Exoscale for the org. Contact @plexus or @victorb or @lispyclouds for this.
 - Create your own SSH keypair on the Console: [guide](https://community.exoscale.com/documentation/compute/ssh-keypairs/)
 - Install Terraform v0.11+.
-- Download the latest terraform provider for your OS from [here](https://github.com/exoscale/terraform-provider-exoscale/releases).
+- Download the latest Exoscale terraform provider for your OS from [here](https://github.com/exoscale/terraform-provider-exoscale/releases).
 - Decompress the archive and follow [the plugin installation](https://www.terraform.io/docs/configuration/providers.html#third-party-plugins).
 - Clone this repo.
 - In the clojurians_log dir:
   - Run `export TF_VAR_exoscale_api_key=$(The API key here)`
   - Run `export TF_VAR_exoscale_secret_key=$(The secret key here)`
   - Run `export TF_VAR_exoscale_ssh_keypair_name=$(The key pair you created)`
-  - Run `terraform init`
+  - Run:
+      ```
+      terraform init \
+        -backend-config="access_key=${TF_VAR_exoscale_api_key}" \
+        -backend-config="secret_key=${TF_VAR_exoscale_secret_key}"
+      ```
   - Run `terraform plan -out plan`
   - Make sure all looks good.
   - Run `terraform apply plan`
