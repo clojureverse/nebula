@@ -4,5 +4,6 @@ plan
 *tfstate*
 .terraform/
 clojurians_log_secrets.yml
+*.retry
 *.log
 .vagrant/
