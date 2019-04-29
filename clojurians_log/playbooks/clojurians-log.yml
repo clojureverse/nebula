@@ -1,0 +1,88 @@
+---
+- hosts: all
+  vars:
+  become: true
+  # gather_facts needs to be false only for the bootstrap installation of python.
+  # There may be other reasons to set gather_facts to false as well.
+  # Having to do with multiple playbooks.
+  gather_facts: false
+  pre_tasks:
+    # install python only if ping fails
+    - name: Try ping first to see if a python already exists
+      ping:
+      ignore_errors: true
+      register: chkping
+    - name: Bootstrap installation of python
+      raw: apt-get -y install python
+      when: chkping is failed
+    - name: Gather facts anyways
+      action: setup
+  tasks:
+    # Keys first, then repos, then the dist-upgrade.
+    - name: Add repository for ansible
+      apt_repository:
+        repo: ppa:ansible/ansible
+        state: present
+    - name: Do a dist-upgrade
+      apt:
+        upgrade: dist
+        update_cache: yes
+    - name: Install the lastest versions of listed packages
+      apt:
+        name: "{{ item }}"
+        state: latest
+        update_cache: yes
+      loop:
+        - ansible
+        - unzip                 # for ansible unarchive module
+        - curl
+        - git
+        - screen
+        - emacs
+        - openjdk-8-jdk         # For Clojure
+        - leiningen             # Must be after openjdk-8-jdk
+        - rlwrap                # For clj
+    - name: Purge installed apps
+      apt:
+        name: "{{ item }}"
+        state: absent
+        purge: yes
+      loop:
+        - ubuntu-web-launchers  # to remove Amazon icon from launcher
+    # Too bad we cannot use the alternatives module
+    # as it would require listing each java command.
+    - name: Check if jdk8 is default
+      command: update-alternatives --display java
+      register: chkjava
+      changed_when: false
+      check_mode: false
+    - name: Choose jdk8 as default for Clojure
+      command: update-java-alternatives --set java-1.8.0-openjdk-amd64
+      when: chkjava.stdout.find('link currently points to /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java') == -1
+    # Clean up
+    - name: Remove unneeded apt stuff
+      apt:
+        autoremove: yes
+    - name: Enable firewall
+      ufw:
+        state: enabled
+    - name: Default firewall ingress rule
+      ufw:
+        direction: incoming
+        policy: deny
+    - name: Default firewall egress rule
+      ufw:
+        direction: outgoing
+        policy: allow
+    - name: Firewall ingress allow rules
+      ufw:
+        rule: allow
+        proto: "{{ item.proto }}"
+        port: "{{ item.port }}"
+      loop:
+        - { proto: 'tcp', port: 'ssh' }
+    # Clojure
+    - import_role:
+        name: clojure
+    #########
+    # Now the user-specific stuff

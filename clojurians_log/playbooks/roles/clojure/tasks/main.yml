@@ -1,0 +1,23 @@
+---
+# A role to install the specified version of Clojure
+# Need this until there is an apt package for Clojure
+- name: Check current Clojure version
+  shell: grep Version /usr/local/bin/clojure 2> /dev/null | sed -e 's/.*Version = //'
+  args:
+    warn: false
+  register: chkclj
+  changed_when: false
+  check_mode: false
+- name: Get Clojure installer
+  get_url:
+    url: "https://download.clojure.org/install/linux-install-{{ clojure_version }}.sh"
+    dest: "/tmp/install-{{ clojure_version }}.sh"
+    mode: 0555
+    checksum: "{{ clojure_sha256 }}"
+  when: chkclj.stdout != clojure_version
+- name: Install Clojure
+  shell: "/tmp/install-{{ clojure_version }}.sh && rm -f /tmp/install-{{ clojure_version }}.sh"
+  when: chkclj.stdout != clojure_version
+  args:
+    removes: "/tmp/install-{{ clojure_version }}.sh"
+    warn: false
