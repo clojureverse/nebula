@@ -33,6 +33,7 @@
         state: latest
         update_cache: yes
       loop:
+        - python3
         - ansible
         - unzip                 # for ansible unarchive module
         - curl
