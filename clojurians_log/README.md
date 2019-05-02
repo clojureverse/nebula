@@ -8,7 +8,7 @@ This is a work in progress and is subject to significant changes over time.
 
 ### Any and all contributions is most welcome!
 
-## How to use it
+## How to use Terraform
 
 - Get an account on Exoscale for the org. Contact @plexus or @victorb or @lispyclouds for this.
 - Create your own SSH keypair on the Console: [guide](https://community.exoscale.com/documentation/compute/ssh-keypairs/)
@@ -30,3 +30,43 @@ This is a work in progress and is subject to significant changes over time.
   - Make sure all looks good.
   - Run `terraform apply plan`
   - To destroy: `terrafrom destroy`
+
+## How to use Vagrant
+
+- [Vagrant](https://www.vagrantup.com/) is a tool to build and provision virtual machines
+  (VMs). Mostly used for building VMs locally. We are using it to first
+  build and provision a local Ubuntu VM, so that we can test out the
+  Ansible scripts without incurring costs on Exoscale. More rationale
+  is at the [Why Vagrant? page](https://www.vagrantup.com/intro/index.html).
+- Generally, it's best to use the package manager of your OS to install programs.
+  But sometimes, the package managers are not always up-to-date,
+  so best to check with the main website and verify the versions.
+- Before downloading Vagrant, you will likely need a "provider" for
+  the virtual machine. The most common is [VirtualBox](https://www.virtualbox.org/).
+  When downloading VirtualBox, please also install the appropriate "guest additions" or "extensions pack".
+  This will allow easier access to host resources from the guest VM.
+  - On Ubuntu or Debian Linux, you can install via `apt`.
+	- `sudo apt install virtualbox`
+	- `sudo apt install virtualbox-guest-additions-iso`
+  - On Mac OS, you can install via the [brew](https://brew.sh/) package manager.
+    - `brew cask install virtualbox`
+	- `brew cask install virtualbox-extension-pack`
+  - You can download VirtualBox from their [download page](https://www.virtualbox.org/wiki/Downloads).
+- We are using [Ansible](https://www.ansible.com/) for provisioning the VM,
+  so you'll have to install that as well. Check out the
+  [installation page](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
+  for instructions on installation.
+- Download and install Vagrant on your local host.
+  - On Ubuntu or Debian Linux, you can install via `apt`.
+	- `sudo apt install vagrant`
+  - On Mac OS, you can install via the [brew](https://brew.sh/) package manager.
+    - `brew cask install vagrant`
+  - You can download directly from the [Vagrant download page](https://www.vagrantup.com/downloads.html).
+- To fire up a Vagrant host VM
+  - `vagrant init`
+  - `vagrant up`
+- At that point, you should have a Vagrant VM provisioned and running.
+  You can log into it using `vagrant ssh`.
+- If you need to re-provision (for example, if you edit the Ansible scripts)
+  you can use `vagrant provision`.
+- To shut down the VM, use `vagrant halt`.
