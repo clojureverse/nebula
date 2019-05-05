@@ -70,9 +70,6 @@
     # Firewall settings
     - import_role:
         - name: firewall
-    # Clojure
-    - import_role:
-        name: clojure
     #########
     # Now set up the users
     - name: Set up plexus
