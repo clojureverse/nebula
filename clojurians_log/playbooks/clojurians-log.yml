@@ -89,4 +89,33 @@
     - import_role:
         name: clojure
     #########
-    # Now the user-specific stuff
+    # Now set up the users
+    - name: Set up plexus
+      import_role:
+        name: setup_user
+      vars:
+        username: plexus
+        full_name: Arne Brasseur
+    - name: Set up lispyclouds
+      import_role:
+        name: setup_user
+      vars:
+        username: lispyclouds
+        full_name: Rahul De
+    - name: Set up victorb
+      import_role:
+        name: setup_user
+      vars:
+        username: victorb
+        full_name: Victor Bjelkholm
+    - name: Set up dorab
+      import_role:
+        name: setup_user
+      vars:
+        username: dorab
+        full_name: Dorab Patel
+        github_username: bombaywalla
+    # Harden sshd. Note: This MUST come after at least one sudoable user having a pubkey login.
+    - name: Harden sshd
+      import_role:
+        name: harden_sshd

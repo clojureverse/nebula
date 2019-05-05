@@ -1,0 +1,31 @@
+---
+# Harden sshd.
+# Use with care, since this will disable root logins via sshd.
+# TODO: Check to see if there is at least one sudoable user with a ssh pub key installed BEFORE removing Root login.
+- name: Disable empty password login
+  lineinfile:
+    dest: "{{ sshd_config }}"
+    regexp: '^(#\s*)?PermitEmptyPasswords '
+    line: 'PermitEmptyPasswords no'
+  notify: restart sshd
+
+- name: Disable root login via sshd
+  lineinfile:
+    dest: "{{ sshd_config }}"
+    regexp: '^(#\s*)?PermitRootLogin '
+    line: "PermitRootLogin no"
+  notify: restart sshd
+
+- name: Disable passwords for sshd login
+  lineinfile:
+    dest: "{{ sshd_config }}"
+    regexp: '^(#\s*)?PasswordAuthentication '
+    line: 'PasswordAuthentication no'
+  notify: restart sshd
+
+- name: Enable PAM
+  lineinfile:
+    dest: "{{ sshd_config }}"
+    regexp: '^(#\s*)?UsePAM '
+    line: 'UsePAM yes'
+  notify: restart sshd

@@ -1,0 +1,3 @@
+---
+# Default location of the sshd config file.
+sshd_config: /etc/ssh/sshd_config
