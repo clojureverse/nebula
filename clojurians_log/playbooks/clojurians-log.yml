@@ -67,24 +67,9 @@
     - name: Remove unneeded apt stuff
       apt:
         autoremove: yes
-    - name: Enable firewall
-      ufw:
-        state: enabled
-    - name: Default firewall ingress rule
-      ufw:
-        direction: incoming
-        policy: deny
-    - name: Default firewall egress rule
-      ufw:
-        direction: outgoing
-        policy: allow
-    - name: Firewall ingress allow rules
-      ufw:
-        rule: allow
-        proto: "{{ item.proto }}"
-        port: "{{ item.port }}"
-      loop:
-        - { proto: 'tcp', port: 'ssh' }
+    # Firewall settings
+    - import_role:
+        - name: firewall
     # Clojure
     - import_role:
         name: clojure
