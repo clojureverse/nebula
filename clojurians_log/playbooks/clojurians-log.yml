@@ -41,7 +41,6 @@
         - screen
         - emacs
         - openjdk-8-jdk         # For Clojure
-        - leiningen             # Must be after openjdk-8-jdk
         - rlwrap                # For clj
     - name: Purge installed apps
       apt:
@@ -50,6 +49,10 @@
         purge: yes
       loop:
         - ubuntu-web-launchers  # to remove Amazon icon from launcher
+    # Unfortunately, the apt version of lein is quite old, so install in /usr/local/bin
+    - name: Set up Leiningen
+      import_role:
+        name: leiningen
     # Too bad we cannot use the alternatives module
     # as it would require listing each java command.
     - name: Check if jdk8 is default

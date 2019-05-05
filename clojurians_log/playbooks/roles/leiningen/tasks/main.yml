@@ -1,0 +1,16 @@
+---
+# Unfortunately, the apt version of leiningen is old.
+# So, have to install it ourselves. As root.
+- name: Ensure {{ lein_dir }}
+  file:
+    path: "{{ lein_dir }}"
+    owner: root
+    group: root
+    state: directory
+- name: Install leiningen
+  get_url:
+    url: "{{ lein_url }}"
+    dest: "{{ lein_dir }}/lein"
+    owner: root
+    group: root
+    mode: 0755
