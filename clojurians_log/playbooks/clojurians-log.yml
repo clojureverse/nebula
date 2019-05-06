@@ -42,6 +42,7 @@
         - emacs
         - openjdk-8-jdk         # For Clojure
         - rlwrap                # For clj
+        - htop                  # To view processes
     - name: Purge installed apps
       apt:
         name: "{{ item }}"

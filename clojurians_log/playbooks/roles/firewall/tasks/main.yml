@@ -19,3 +19,5 @@
     port: "{{ item.port }}"
   loop:
     - { proto: 'tcp', port: 'ssh' }
+    - { proto: 'tcp', port: 'http' }
+    - { proto: 'tcp', port: 'https' }
