@@ -1,0 +1,58 @@
+---
+# Setup a sudo-able passwordless user
+- name: Ensure there is a group
+  group:
+    name: "{{ username }}"
+- name: Ensure there is a user with an unusable password
+  user:
+    name: "{{ username }}"
+    group: "{{ username }}"
+    groups: "{{ user_groups }}"
+    shell: "{{ login_shell }}"
+    comment: "{{ full_name }},,,"
+    password: '!'
+- name: Ensure a bin directory
+  file:
+    path: "~{{ username }}/bin"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    state: directory
+- name: Ensure sudo without password
+  copy:
+    content: |
+      Defaults:{{ username }} !requiretty
+      {{ username }} ALL=(ALL) NOPASSWD: ALL
+    dest: /etc/sudoers.d/{{ username }}
+    owner: root
+    group: root
+    mode: 0400
+- name: Ensure ~/.ssh
+  file:
+    path: "~{{ username }}/.ssh"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: 0700
+    state: directory
+- name: Add authorized public key
+  authorized_key:
+    user: "{{ username }}"
+    key: "{{ ssh_pubkey }}"
+- name: Add ssh client config
+  copy:
+    content: |
+      Host *
+      Protocol 2
+      UseRoaming no
+      ServerAliveInterval 180
+      GSSAPIAuthentication no
+      PasswordAuthentication no
+      ChallengeResponseAuthentication no
+      PubkeyAuthentication yes
+      HostKeyAlgorithms ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ssh-ed25519,ssh-rsa
+      KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256
+      Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+      MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com
+    dest: "~{{ username }}/.ssh/config"
+    owner: "{{ username }}"
+    group: "{{ username }}"
+    mode: 0600

@@ -1,0 +1,34 @@
+---
+- hosts: all
+  vars:
+  become: true
+  # gather_facts needs to be false only for the bootstrap installation of python.
+  # There may be other reasons to set gather_facts to false as well.
+  # Having to do with multiple playbooks.
+  gather_facts: false
+  pre_tasks:
+    # install python only if ping fails
+    - name: Try ping first to see if a python already exists
+      ping:
+      ignore_errors: true
+      register: chkping
+    - name: Bootstrap installation of python
+      raw: apt-get -y install python
+      when: chkping is failed
+    - name: Gather facts anyways
+      action: setup
+  tasks:
+    # Keys first, then repos, then the dist-upgrade.
+    - name: Add repository for ansible
+      apt_repository:
+        repo: ppa:ansible/ansible
+        state: present
+    - name: Do a dist-upgrade
+      apt:
+        upgrade: dist
+        update_cache: yes
+    - name: Install ansible
+      apt:
+        name: ansible
+        state: latest
+        update_cache: yes

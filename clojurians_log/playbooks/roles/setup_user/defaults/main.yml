@@ -1,0 +1,10 @@
+---
+# Default vars for the setup_user role
+username: ''
+full_name: ''
+github_username: "{{ username }}"
+# groups are the same as the ubuntu user. Make sure sudo is here.
+user_groups: 'adm,dialout,cdrom,floppy,sudo,audio,dip,video,plugdev,lxd,netdev'
+login_shell: '/bin/bash'
+ssh_pubkey: "https://github.com/{{ github_username }}.keys"
+  

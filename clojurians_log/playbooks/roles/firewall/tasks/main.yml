@@ -1,0 +1,23 @@
+---
+# Firewall settings
+# TODO: Will need to open other ports as well.
+- name: Enable firewall
+  ufw:
+    state: enabled
+- name: Default firewall ingress rule
+  ufw:
+    direction: incoming
+    policy: deny
+- name: Default firewall egress rule
+  ufw:
+    direction: outgoing
+    policy: allow
+- name: Firewall ingress allow rules
+  ufw:
+    rule: allow
+    proto: "{{ item.proto }}"
+    port: "{{ item.port }}"
+  loop:
+    - { proto: 'tcp', port: 'ssh' }
+    - { proto: 'tcp', port: 'http' }
+    - { proto: 'tcp', port: 'https' }
