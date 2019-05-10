@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+
+# Install Ansible
+sudo apt update
+sudo apt install -y software-properties-common
+sudo apt-add-repository --yes --update ppa:ansible/ansible
+sudo apt install -y ansible
+
+cd ~
+
+# Clone repo and switch to it
+git clone https://github.com/clojureverse/nebula
+cd nebula/clojurians_log
+
+# Start provisioning
+cd playbooks
+
+# Bootstrap the instance
+ansible-playbook bootstrap.yml -i hosts
+
+# Setup clojurians_log
+ansible-playbook clojurians-log.yml -i hosts
