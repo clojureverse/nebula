@@ -3,7 +3,7 @@ terraform {
     bucket = "clojurians-log"
     key = "tfstates/clojurians_log.tfstate"
     # Dummy for S3 compat.
-    region = "eu-central-1"
+    region = "de-fra-1"
     endpoint = "https://sos-de-fra-1.exo.io"
 
     skip_credentials_validation = true

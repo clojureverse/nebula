@@ -80,18 +80,21 @@
       vars:
         username: plexus
         full_name: Arne Brasseur
+        github_username: plexus
     - name: Set up lispyclouds
       import_role:
         name: setup_user
       vars:
         username: lispyclouds
         full_name: Rahul De
+        github_username: lispyclouds
     - name: Set up victorb
       import_role:
         name: setup_user
       vars:
         username: victorb
         full_name: Victor Bjelkholm
+        github_username: victorb
     - name: Set up dorab
       import_role:
         name: setup_user
