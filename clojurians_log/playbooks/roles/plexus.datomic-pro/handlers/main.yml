@@ -1,0 +1,5 @@
+---
+- name: restart datomic
+  service:
+    name: datomic
+    state: restarted

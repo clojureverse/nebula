@@ -1,11 +1,22 @@
 ---
 - hosts: all
-  vars:
+  vars_files:
+    - vars/clojurians_log_secrets.yml
   become: true
   # gather_facts needs to be false only for the bootstrap installation of python.
   # There may be other reasons to set gather_facts to false as well.
   # Having to do with multiple playbooks.
   gather_facts: false
+  vars:
+    database_name: "clojurians_log_datomic"
+    database_user: "clojurians_log"
+    database_hostname: "localhost"
+    database_port: 5432
+    clojurians_app_http_port: 4242
+    datomic_pro_version: 0.9.5561.56
+    datomic_object_cache_max: 2g
+    clojure_app_env_vars: |
+      JVM_OPTS="-Dclojure.server.myrepl={:port,50505,:accept,clojure.core.server/repl} -Xmx8g -Xms2g -Ddatomic.ObjectCacheMax=7g -Ddatomic.memcachedServers=127.0.0.1:11211"
   pre_tasks:
     # install python only if ping fails
     - name: Try ping first to see if a python already exists
@@ -77,24 +88,28 @@
     - name: Set up plexus
       import_role:
         name: setup_user
+      tags: setup_user
       vars:
         username: plexus
         full_name: Arne Brasseur
     - name: Set up lispyclouds
       import_role:
         name: setup_user
+      tags: setup_user
       vars:
         username: lispyclouds
         full_name: Rahul De
     - name: Set up victorb
       import_role:
         name: setup_user
+      tags: setup_user
       vars:
         username: victorb
         full_name: Victor Bjelkholm
     - name: Set up dorab
       import_role:
         name: setup_user
+      tags: setup_user
       vars:
         username: dorab
         full_name: Dorab Patel
@@ -104,3 +119,28 @@
     - name: Harden sshd
       import_role:
         name: harden_sshd
+    # Now install the programs
+    - name: Install memcached
+      import_role:
+        name: geerlingguy.memcached
+      tags: memcached
+      vars:
+        memcached_memory_limit: 4096
+    - name: Install postgres
+      import_role:
+        name: geerlingguy.postgresql
+      tags: postgres
+      vars:
+        postgresql_databases:
+          - name: "{{ database_name }}"
+        postgresql_users:
+          - name: "{{ database_user }}"
+            password: "{{ database_password }}"
+            db: "{{ database_name }}"
+            priv: "ALL"
+    - name: Install datomic-pro
+      import_role:
+        name: plexus.datomic-pro
+      tags: datomic
+      vars:
+        datomic_memcached: 127.0.0.1:11211
