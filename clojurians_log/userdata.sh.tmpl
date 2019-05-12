@@ -18,7 +18,7 @@ cd playbooks
 
 # Barf the secrets file
 cat > vars/clojurians_log_secrets.yml << YAML
-${file("vars/clojurians_log_secrets.yml")}
+${file("playbooks/vars/clojurians_log_secrets.yml")}
 YAML
 
 # Bootstrap the instance
