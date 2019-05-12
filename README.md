@@ -12,6 +12,12 @@ Powered by [Exoscale](https://www.exoscale.com/).
 
 The apps are arranged by directory and their respective setup and READMEs can be found in them.
 
+### Maintainers
+- [@plexus](https://github.com/plexus)
+- [@lispyclouds](https://github.com/lispyclouds)
+- [@victorb](https://github.com/victorb)
+- [@bombaywalla](https://github.com/bombaywalla) 
+
 ## License
 
 Copyright © 2018 Arne Brasseur and contributors.
