@@ -1,0 +1,73 @@
+- name: Create Datomic user.
+  user: name="{{ datomic_user }}" state=present
+
+- name: Create Datomic directory
+  file: state=directory path="{{ datomic_dir }}" owner="{{ datomic_user }}" group="{{ datomic_user }}" mode=755
+
+- name: Make Datomic log directory
+  file: state=directory path="{{ datomic_log_dir }}" owner="{{ datomic_user }}" group="{{ datomic_group }}" mode=755
+
+- name: Check Datomic installation
+  stat: path="{{ datomic_dir }}/runtime"
+  register: datomic_link
+  ignore_errors: true
+
+- name: Install unzip package
+  apt: pkg=unzip state=present update-cache=yes
+
+- name: Download Datomic
+  get_url:
+    url: "https://my.datomic.com/repo/com/datomic/datomic-pro/{{ datomic_pro_version }}/datomic-pro-{{ datomic_pro_version }}.zip"
+    url_username: "{{ datomic_pro_email }}"
+    url_password: "{{ datomic_pro_download_key }}"
+    dest: "{{ datomic_dir }}/datomic-pro-{{ datomic_pro_version }}.zip"
+
+- name: Unpack Datomic
+  unarchive:
+    src: "{{ datomic_dir }}/datomic-pro-{{ datomic_pro_version }}.zip"
+    dest: "{{ datomic_dir }}"
+    remote_src: yes
+  when: not datomic_link.stat.exists
+
+- name: Link datomic
+  file: src="{{ datomic_dir }}/datomic-pro-{{ datomic_pro_version }}"
+        dest="{{ datomic_dir }}/runtime"
+        owner="{{ datomic_user }}"
+        group="{{ datomic_group }}"
+        state=link
+  when: not datomic_link.stat.exists
+  notify: restart datomic
+
+- name: datomic dir permissions
+  file:
+    path: "{{ datomic_dir }}"
+    owner: datomic
+    group: datomic
+    recurse: true
+
+- name: Upload CREATE TABLE datomic_kvs script
+  copy:
+    src: templates/postgresql_create_datomic_kvs.sql
+    dest: "{{ datomic_dir }}/postgresql_create_datomic_kvs.sql"
+
+- name: Execute CREATE TABLE datomic_kvs script
+  shell: |
+    PGPASSWORD="{{ database_password }}" psql -f "{{ datomic_dir }}/postgresql_create_datomic_kvs.sql" -h localhost -U "{{ database_user }}" "{{ database_name }}"
+
+- name: Upload Datomic transactor configuration
+  template:
+    src: templates/datomic-transactor.properties.j2
+    dest: "{{ datomic_dir }}/datomic-transactor.properties"
+  notify: restart datomic
+
+- name: Upload Datomic Systemd startup script
+  template:
+    src: templates/datomic.service.j2
+    dest: "/etc/systemd/system/datomic.service"
+  notify: restart datomic
+
+- name: Start the datomic service
+  service:
+    name: datomic
+    state: started
+    enabled: yes
