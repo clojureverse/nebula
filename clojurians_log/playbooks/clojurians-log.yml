@@ -61,7 +61,7 @@
         purge: yes
       loop:
         - ubuntu-web-launchers  # to remove Amazon icon from launcher
-    # Unfortunately, the apt version of lein is quite old, so install in /usr/local/bin
+    # Unfortunately, the apt version of lein is quite old.
     - name: Set up Leiningen
       import_role:
         name: leiningen
@@ -147,3 +147,14 @@
       tags: datomic
       vars:
         datomic_memcached: 127.0.0.1:11211
+
+    - name: Install the Clojure Web App
+      import_role:
+        name: plexus.clojure-web-app
+      tags: clojure-web-app
+      vars:
+        clojure_app_authorized_keys: |
+          ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCf99gah0qnmLQn3yix8NFk2JsV0kHTzciLLHVUFfJmCsb4sHY4yKAuiMfp9E0s71tIsmVfw9GdNfhit/nHqQG/VGjgYSR4zIRD0Rr0V5GrDsSS/jWotNfb0JXt+Up310BE/diL7vi8uTwe3t5THymiuibFLgoaHvnbFE1VYojpyiGcSOGmE9GrDOuN08mg2ynb6FAK2/tnfo+ZBwl7g3A9pMvjHUwRzFyq+Z+Mdmf8c8x4qLrikUNv/U3TL1WPXUB4rwiUwhnRqadR/uBGYUwWJ1vfh4wl1aZqnyVRM3YfDmb5720m2IXX1MPH0CDio8moT9bwIfSRyBUt3zDuft/R arne@twoflower
+        clojure_app_main_command: "/usr/local/bin/lein with-profile +production,-dev run {{ clojure_app_home_dir }}/config.edn"
+        clojure_app_health_check_url: "http://localhost:{{clojurians_app_http_port}}/healthcheck"
+        clojure_app_service_start_after: datomic.service
