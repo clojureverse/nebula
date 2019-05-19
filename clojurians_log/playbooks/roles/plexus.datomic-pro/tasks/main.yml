@@ -38,6 +38,7 @@
   when: not datomic_link.stat.exists
   notify: restart datomic
 
+# TODO: find out why this is not idempotent. Perhaps the log files?
 - name: datomic dir permissions
   file:
     path: "{{ datomic_dir }}"
@@ -50,6 +51,7 @@
     src: templates/postgresql_create_datomic_kvs.sql
     dest: "{{ datomic_dir }}/postgresql_create_datomic_kvs.sql"
 
+# TODO: make this idempotent
 - name: Execute CREATE TABLE datomic_kvs script
   shell: |
     PGPASSWORD="{{ database_password }}" psql -f "{{ datomic_dir }}/postgresql_create_datomic_kvs.sql" -h localhost -U "{{ database_user }}" "{{ database_name }}"
