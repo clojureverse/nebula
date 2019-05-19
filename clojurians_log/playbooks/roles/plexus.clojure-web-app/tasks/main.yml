@@ -13,8 +13,8 @@
     state: present
     home: "{{ clojure_app_home_dir }}"
     generate_ssh_key: yes
+    group: "{{ clojure_app_user }}"
     groups:
-      - "{{ clojure_app_user }}"
       - systemd-journal
 
 - name: Create Git directories
