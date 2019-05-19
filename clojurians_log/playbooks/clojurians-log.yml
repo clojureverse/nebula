@@ -34,10 +34,6 @@
       apt_repository:
         repo: ppa:ansible/ansible
         state: present
-    - name: Do a dist-upgrade
-      apt:
-        upgrade: dist
-        update_cache: yes
     - name: Install the lastest versions of listed packages
       apt:
         name: "{{ item }}"
@@ -62,6 +58,10 @@
         purge: yes
       loop:
         - ubuntu-web-launchers  # to remove Amazon icon from launcher
+    - name: Do a dist-upgrade
+      apt:
+        upgrade: dist
+        update_cache: yes
     # Unfortunately, the apt version of lein is quite old.
     - name: Set up Leiningen
       import_role:
