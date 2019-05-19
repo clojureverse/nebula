@@ -8,3 +8,4 @@ __postgresql_packages:
   - postgresql
   - postgresql-contrib
   - libpq-dev
+  - python3-psycopg2
