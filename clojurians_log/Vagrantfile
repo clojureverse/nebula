@@ -67,9 +67,11 @@ Vagrant.configure("2") do |config|
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "playbooks/bootstrap.yml"
     ansible.compatibility_mode = "2.0"
+    ansible.extra_vars = { ansible_python_interpreter: "/usr/bin/python3" }
   end
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "playbooks/clojurians-log.yml"
     ansible.compatibility_mode = "2.0"
+    ansible.extra_vars = { ansible_python_interpreter: "/usr/bin/python3" }
   end
 end
