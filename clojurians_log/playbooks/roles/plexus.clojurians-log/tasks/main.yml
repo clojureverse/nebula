@@ -3,6 +3,8 @@
   template:
     src: templates/config.edn
     dest: "{{ clojure_app_home_dir }}/config.edn"
+    owner: "{{ clojure_app_user }}"
+    group: "{{ clojure_app_user }}"
   tags: app-config
 
 - name: Ensures {{clojure_app_home_dir}}/.lein dir exists
@@ -36,10 +38,11 @@
     mode: 0600
 
 - name: Check out existing logs
-  become: "{{ clojure_app_user }}"
+  become: yes
+  become_user: "{{ clojure_app_user }}"
   become_method: sudo
   git:
-    repo: "git@github.com:plexus/clojurians-log.git"
+    repo: "git@github.com:clojureverse/clojurians-log-demo-data.git"
     dest: "{{ clojure_app_home_dir }}/logs"
     accept_hostkey: yes
     key_file: "{{ clojure_app_home_dir }}/.ssh/id_rsa"
