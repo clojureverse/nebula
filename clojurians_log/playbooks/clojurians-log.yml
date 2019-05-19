@@ -44,16 +44,17 @@
         state: latest
         update_cache: yes
       loop:
-        - python3
         - ansible
-        - unzip                 # for ansible unarchive module
+        - aptitude              # to shut up dist-upgrade warning
         - curl
-        - git
-        - screen
         - emacs
-        - openjdk-8-jdk         # For Clojure
-        - rlwrap                # For clj
+        - git
         - htop                  # To view processes
+        - openjdk-8-jdk         # For Clojure
+        - python3
+        - rlwrap                # For clj
+        - screen
+        - unzip                 # for ansible unarchive module
     - name: Purge installed apps
       apt:
         name: "{{ item }}"
