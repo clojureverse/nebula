@@ -38,9 +38,10 @@
       apt:
         name: "{{ item }}"
         state: latest
+        update_cache: yes
       loop:
         - ansible
-        - aptitude              # to shut up dist-upgrade warning
+        - aptitude              # to shut up warning (only the subsequent times)
         - curl
         - emacs
         - git
