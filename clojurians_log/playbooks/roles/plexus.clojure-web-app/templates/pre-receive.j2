@@ -20,7 +20,9 @@ end
 
 def update_work_tree!(target)
   puts "Updating working tree {{clojure_app_app_dir}} to #{target}"
-  exec!("git", "-c", "advice.detachedHead=false", "--work-tree={{ clojure_app_app_dir }}", "checkout", "--force", target) do |thread|
+# See https://github.com/dokku/dokku/issues/2796 for the reasoning behind unsetting GIT_QUARANTINE_PATH.
+  exec!("env", "-u", "GIT_QUARANTINE_PATH",
+        "git", "-c", "advice.detachedHead=false", "--work-tree={{ clojure_app_app_dir }}", "checkout", "--force", target) do |thread|
     unless thread.value.success?
       puts "Updating working tree failed (#{thread.value.exitstatus})"
       exit thread.value.exitstatus
