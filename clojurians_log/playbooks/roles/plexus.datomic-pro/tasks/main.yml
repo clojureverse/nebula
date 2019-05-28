@@ -38,6 +38,7 @@
   when: not datomic_link.stat.exists
   notify: restart datomic
 
+# TODO: find out why this is not idempotent. Perhaps the log files?
 - name: datomic dir permissions
   file:
     path: "{{ datomic_dir }}"
@@ -50,9 +51,26 @@
     src: templates/postgresql_create_datomic_kvs.sql
     dest: "{{ datomic_dir }}/postgresql_create_datomic_kvs.sql"
 
+- name: Check if the datomic_kvs table exists
+  shell: >-
+    PGPASSWORD="{{ database_password | quote}}"
+    psql -c '\d datomic_kvs'
+    -h localhost
+    -U "{{ database_user | quote }}"
+    "{{ database_name | quote}}"
+  register: chkkvs
+  ignore_errors: true
+  check_mode: no
+  changed_when: false
+
 - name: Execute CREATE TABLE datomic_kvs script
-  shell: |
-    PGPASSWORD="{{ database_password }}" psql -f "{{ datomic_dir }}/postgresql_create_datomic_kvs.sql" -h localhost -U "{{ database_user }}" "{{ database_name }}"
+  shell: >-
+    PGPASSWORD="{{ database_password | quote}}"
+    psql -f "{{ datomic_dir | quote }}/postgresql_create_datomic_kvs.sql"
+    -h localhost
+    -U "{{ database_user | quote }}"
+    "{{ database_name | quote}}"
+  when: chkkvs is failed
 
 - name: Upload Datomic transactor configuration
   template:
