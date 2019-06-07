@@ -8,3 +8,5 @@ clojurians_log_secrets.yml
 *.log
 .vagrant/
 exoscale_api_keys.sh
+*.crt
+*.key
