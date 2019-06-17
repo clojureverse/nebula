@@ -94,6 +94,6 @@ This is a work in progress and is subject to significant changes over time.
 - Add a remote repo that points at the deployed instance with user `clojure_app`.
   The path to the repo is `/var/clojure_app/repo`.
   So, for a local vagrant instance you might use:
-  - `git remote add deploy ssh://clojure_app@127.0.0.1:2222/var/clojure_app/repo`
-- You can now make changes (if any) to the local repo and when ready to deploy, use:
-  - `git push deploy`
+  - `git remote add vagrant ssh://clojure_app@127.0.0.1:2222/var/clojure_app/repo`
+- You can now make changes (if any) to the local repo and when ready to deploy to vagrant, use:
+  - `git push vagrant`
