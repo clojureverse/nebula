@@ -88,7 +88,7 @@ This is a work in progress and is subject to significant changes over time.
 ## How to deploy the Clojurians-log app
 
 - Deploy an instance of the server at Exoscale (using Terraform) or Vagrant.
-- Clone the clojurian-log-app to a local repository on your machine.
+- Clone the deployment branch of the clojurian-log-app to a local repository on your machine.
   - `git clone --single-branch --branch deployment https://github.com/clojureverse/clojurians-log-app`
   - `cd clojurians-log-app`
 - Add a remote repo that points at the deployed instance with user `clojure_app`.
