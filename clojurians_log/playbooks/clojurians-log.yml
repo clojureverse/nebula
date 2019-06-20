@@ -1,5 +1,10 @@
 ---
 - hosts: all
+  # Workaround for apt-get bug
+  # https://bugs.launchpad.net/ubuntu/+source/ansible/+bug/1833013
+  # https://github.com/hashicorp/vagrant/issues/10914
+  environment:
+    DEBIAN_FRONTEND: "noninteractive"
   vars_files:
     - vars/clojurians_log_secrets.yml
   become: true

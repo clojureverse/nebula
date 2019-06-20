@@ -1,6 +1,10 @@
 ---
 - hosts: all
-  vars:
+  # Workaround for apt-get bug
+  # https://bugs.launchpad.net/ubuntu/+source/ansible/+bug/1833013
+  # https://github.com/hashicorp/vagrant/issues/10914
+  environment:
+    DEBIAN_FRONTEND: "noninteractive"
   become: true
   # gather_facts needs to be false only for the bootstrap installation of python.
   # There may be other reasons to set gather_facts to false as well.
@@ -23,6 +27,11 @@
       apt_repository:
         repo: ppa:ansible/ansible
         state: present
+    - name: Install aptitude
+      apt:
+        name: aptitude
+        state: latest
+        update_cache: yes
     - name: Do a dist-upgrade
       apt:
         upgrade: dist
