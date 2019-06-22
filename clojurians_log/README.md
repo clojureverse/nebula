@@ -100,6 +100,6 @@ This is a work in progress and is subject to significant changes over time.
 - Then log into the vagrant guest as `clojure_app`.
 - On the vagrant guest, connect to the app and load up the demo log files, then restart the app.
   - `echo '(use '"'"'clojurians-log.repl) (load-demo-data! "/var/clojure_app/logs")' | nc -N localhost 50505`
-  - `systemctl restart clojure_app`
+  - `sudo systemctl restart clojure_app`
 - On the host running vagrant, you can access the app at
   - `http://127.0.0.1:2200/`
