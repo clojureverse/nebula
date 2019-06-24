@@ -1,5 +1,10 @@
 ---
 - hosts: all
+  # Workaround for apt-get bug
+  # https://bugs.launchpad.net/ubuntu/+source/ansible/+bug/1833013
+  # https://github.com/hashicorp/vagrant/issues/10914
+  environment:
+    DEBIAN_FRONTEND: "noninteractive"
   vars_files:
     - vars/clojurians_log_secrets.yml
   become: true
@@ -28,6 +33,7 @@
       when: chkping is failed
     - name: Gather facts anyways
       action: setup
+      tags: setup
   tasks:
     # Keys first, then repos, then the dist-upgrade.
     - name: Add repository for ansible
@@ -168,3 +174,40 @@
       import_role:
         name: plexus.clojurians-log
       tags: clojurians-log
+    # Nginx
+    - name: Install and configure nginx
+      tags: nginx
+      import_role:
+        name: geerlingguy.nginx
+      vars:
+        nginx_remove_default_vhost: true
+        nginx_extra_http_options: |
+          proxy_buffering    off;
+          proxy_set_header   X-Real-IP $remote_addr;
+          proxy_set_header   X-Scheme $scheme;
+          proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header   Host $http_host;
+        nginx_vhosts:
+          - listen: 80
+            server_name: "localhost"
+            nginx_access_log: off
+            extra_parameters: |
+              location / {
+                  root {{ clojure_app_app_dir }}/resources/public;
+                  try_files $uri @proxy_app;
+                  expires max;
+                  if ($request_filename ~ "^.*/([^/]+\.(zip|tgz|iso|gz|vcf))$"){
+                    set $fname $1;
+                    add_header Content-Disposition 'attachment; filename="$fname"';
+                  }
+
+              }
+              location @proxy_app {
+                  proxy_pass http://localhost:{{ clojurians_app_http_port }};
+                  proxy_read_timeout 90;
+                  proxy_redirect http://localhost:{{ clojurians_app_http_port }} https://clojurians-log.clojureverse.org;
+                  proxy_set_header Host $host;
+                  proxy_set_header X-Real-IP $remote_addr;
+                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto $scheme;
+              }
