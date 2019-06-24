@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 
-
 # Install Ansible
+set -e
+
 sudo apt update
 sudo apt install -y software-properties-common
 sudo apt-add-repository --yes --update ppa:ansible/ansible
-sudo apt install -y ansible
+
+# Workaround for apt-get bug
+# https://bugs.launchpad.net/ubuntu/+source/ansible/+bug/1833013
+# https://github.com/hashicorp/vagrant/issues/10914
+sudo DEBIAN_FRONTEND=noninteractive apt install -y ansible
 
 cd ~
 
@@ -22,7 +27,7 @@ ${file("playbooks/vars/clojurians_log_secrets.yml")}
 YAML
 
 # Bootstrap the instance
-ansible-playbook bootstrap.yml -i hosts
+ansible-playbook bootstrap.yml -i hosts >> ~/ansible.log
 
 # Setup clojurians_log
-ansible-playbook clojurians-log.yml -i hosts
+ansible-playbook clojurians-log.yml -i hosts >> ~/ansible.log
