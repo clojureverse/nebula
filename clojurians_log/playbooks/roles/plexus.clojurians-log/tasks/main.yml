@@ -42,7 +42,7 @@
   become_user: "{{ clojure_app_user }}"
   become_method: sudo
   git:
-    repo: "git@github.com:plexus/clojurians-log.git"
+    repo: "{{ demo_logs_repo_url if use_demo_logs else real_logs_repo_url }}"
     dest: "{{ clojure_app_home_dir }}/logs/logs"
     accept_hostkey: yes
     key_file: "{{ clojure_app_home_dir }}/.ssh/id_rsa"
