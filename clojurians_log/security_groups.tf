@@ -33,4 +33,24 @@ resource "exoscale_security_group_rules" "clojurians_log" {
       "0.0.0.0/0",
       "::/0"]
   }
+
+  ingress {
+    description = "HTTP"
+    protocol = "TCP"
+    ports = [
+      "80"]
+    cidr_list = [
+      "0.0.0.0/0",
+      "::/0"]
+  }
+
+  ingress {
+    description = "HTTPS"
+    protocol = "TCP"
+    ports = [
+      "443"]
+    cidr_list = [
+      "0.0.0.0/0",
+      "::/0"]
+  }
 }
