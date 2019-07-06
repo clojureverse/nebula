@@ -8,10 +8,6 @@
   vars_files:
     - vars/clojurians_log_secrets.yml
   become: true
-  # gather_facts needs to be false only for the bootstrap installation of python.
-  # There may be other reasons to set gather_facts to false as well.
-  # Having to do with multiple playbooks.
-  gather_facts: false
   vars:
     database_name: "clojurians_log_datomic"
     database_user: "clojurians_log"
@@ -22,18 +18,6 @@
     datomic_object_cache_max: 2g
     clojure_app_env_vars: |
       JVM_OPTS="-Dclojure.server.myrepl={:port,50505,:accept,clojure.core.server/repl} -Xmx8g -Xms2g -Ddatomic.ObjectCacheMax=7g -Ddatomic.memcachedServers=127.0.0.1:11211"
-  pre_tasks:
-    # install python only if ping fails
-    - name: Try ping first to see if a python already exists
-      ping:
-      ignore_errors: true
-      register: chkping
-    - name: Bootstrap installation of python
-      raw: apt-get -y install python
-      when: chkping is failed
-    - name: Gather facts anyways
-      action: setup
-      tags: setup
   tasks:
     # Keys first, then repos, then the dist-upgrade.
     - name: Add repository for ansible
@@ -47,12 +31,12 @@
         update_cache: yes
       loop:
         - ansible
-        - aptitude              # to shut up warning (only the subsequent times)
         - curl
         - emacs
         - git
         - htop                  # To view processes
         - openjdk-8-jdk         # For Clojure
+        - pip3
         - python3
         - rlwrap                # For clj
         - screen
