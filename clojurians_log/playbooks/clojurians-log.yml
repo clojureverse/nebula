@@ -36,8 +36,8 @@
         - git
         - htop                  # To view processes
         - openjdk-8-jdk         # For Clojure
-        - pip3
         - python3
+        - python3-pip
         - rlwrap                # For clj
         - screen
         - unzip                 # for ansible unarchive module
