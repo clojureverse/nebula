@@ -51,6 +51,7 @@
     src: templates/postgresql_create_datomic_kvs.sql
     dest: "{{ datomic_dir }}/postgresql_create_datomic_kvs.sql"
 
+# TODO: The PGPASSWORD is exposed in the output
 - name: Check if the datomic_kvs table exists
   shell: >-
     PGPASSWORD="{{ database_password | quote}}"
