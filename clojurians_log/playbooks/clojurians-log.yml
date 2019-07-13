@@ -195,7 +195,8 @@
                   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                   proxy_set_header X-Forwarded-Proto $scheme;
               }
-#    - name: Setup and config rtmbot
-#      tags: rtmbot
-#      import_role:
-#        name: plexus.rtmbot
+
+    - name: Setup and config rtmbot
+      tags: rtmbot
+      import_role:
+        name: plexus.rtmbot

@@ -1,16 +1,7 @@
 ---
-- name: Install python dependencies
+- name: Install rtmbot dependency
   pip:
-    name: "{{ item }}"
-  with_items:
-#    - requests
-#    - python-daemon
-#    - pyyaml
-#    - websocket-client
-    - slackclient
-#    - docopt
-#    - pystache
-#    - py-gfm
+    name: 'slackclient'
   tags: rtmbot
 
 - name: Create rtmbot directory
@@ -47,15 +38,15 @@
     mode: 0644
   tags: rtmbot
 
-# - name: Upload rtmbot Systemd startup script
-#   template:
-#     src: templates/rtmbot.service.j2
-#     dest: "/etc/systemd/system/rtmbot.service"
-#   tags: rtmbot
-# 
-# - name: Start the rtmbot
-#   service:
-#     name: rtmbot
-#     state: started
-#     enabled: yes
-#   tags: rtmbot
+- name: Upload rtmbot Systemd startup script
+  template:
+    src: templates/rtmbot.service.j2
+    dest: "/etc/systemd/system/rtmbot.service"
+  tags: rtmbot
+
+- name: Start the rtmbot
+  service:
+    name: rtmbot
+    state: started
+    enabled: yes
+  tags: rtmbot
