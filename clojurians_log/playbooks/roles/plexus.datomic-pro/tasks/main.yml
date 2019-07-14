@@ -21,6 +21,7 @@
     url_username: "{{ datomic_pro_email }}"
     url_password: "{{ datomic_pro_download_key }}"
     dest: "{{ datomic_dir }}/datomic-pro-{{ datomic_pro_version }}.zip"
+  no_log: true
 
 - name: Unpack Datomic
   unarchive:
@@ -51,7 +52,6 @@
     src: templates/postgresql_create_datomic_kvs.sql
     dest: "{{ datomic_dir }}/postgresql_create_datomic_kvs.sql"
 
-# TODO: The PGPASSWORD is exposed in the output
 - name: Check if the datomic_kvs table exists
   shell: >-
     PGPASSWORD="{{ database_password | quote}}"
@@ -60,6 +60,7 @@
     -U "{{ database_user | quote }}"
     "{{ database_name | quote}}"
   register: chkkvs
+  no_log: true
   ignore_errors: true
   check_mode: no
   changed_when: false
@@ -72,6 +73,7 @@
     -U "{{ database_user | quote }}"
     "{{ database_name | quote}}"
   when: chkkvs is failed
+  no_log: true
 
 - name: Upload Datomic transactor configuration
   template:
