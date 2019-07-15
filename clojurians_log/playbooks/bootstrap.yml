@@ -1,43 +1,59 @@
 ---
+# Playbook to ensure that python3 pip3 and ansible are installed on remote managed host
 - hosts: all
   # Workaround for apt-get bug
   # https://bugs.launchpad.net/ubuntu/+source/ansible/+bug/1833013
   # https://github.com/hashicorp/vagrant/issues/10914
-  environment:
-    DEBIAN_FRONTEND: "noninteractive"
+  # environment:
+  #   DEBIAN_FRONTEND: "noninteractive"
+  # The raw module does not support environment.
+  # So have to include it explicitly in the apt tasks.
   become: true
-  # gather_facts needs to be false only for the bootstrap installation of python.
-  # There may be other reasons to set gather_facts to false as well.
-  # Having to do with multiple playbooks.
+  # gather_facts needs to be false only for the bootstrap installation of python3.
   gather_facts: false
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
   pre_tasks:
-    # install python only if ping fails
-    - name: Try ping first to see if a python already exists
+    - name: Try ping first to see if a python3 already exists
       ping:
       ignore_errors: true
       register: chkping
-    - name: Bootstrap installation of python
-      raw: apt-get -y install python
+    - name: Bootstrap installation of python3
+      raw: apt-get -y install python3
       when: chkping is failed
     - name: Gather facts anyways
       action: setup
+      tags: bootstrap
   tasks:
-    # Keys first, then repos, then the dist-upgrade.
     - name: Add repository for ansible
       apt_repository:
         repo: ppa:ansible/ansible
         state: present
+      environment:
+        DEBIAN_FRONTEND: "noninteractive"
+    - name: Do a dist-upgrade
+      apt:
+        upgrade: dist
+        update_cache: yes
+        force_apt_get: yes
+      environment:
+        DEBIAN_FRONTEND: "noninteractive"
+    - name: Install ansible
+      apt:
+        name: ansible
+        state: latest
+        force_apt_get: yes
+      environment:
+        DEBIAN_FRONTEND: "noninteractive"
+   # Need to install aptitude with (force_apt_get) until
+   # https://github.com/ansible/ansible/issues/56832
+   # is in production (ansible 2.9?)
+   # To suppress aptitude warnings in the apt module.
     - name: Install aptitude
       apt:
         name: aptitude
         state: latest
         update_cache: yes
-    - name: Do a dist-upgrade
-      apt:
-        upgrade: dist
-        update_cache: yes
-    - name: Install ansible
-      apt:
-        name: ansible
-        state: latest
-        update_cache: yes
+        force_apt_get: yes
+      environment:
+        DEBIAN_FRONTEND: "noninteractive"
