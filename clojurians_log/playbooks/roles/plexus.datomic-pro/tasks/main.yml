@@ -1,11 +1,23 @@
 - name: Create Datomic user.
-  user: name="{{ datomic_user }}" state=present
+  user:
+    name: "{{ datomic_user }}"
+    state: present
 
 - name: Create Datomic directory
-  file: state=directory path="{{ datomic_dir }}" owner="{{ datomic_user }}" group="{{ datomic_user }}" mode=755
+  file:
+    state: directory
+    path: "{{ datomic_dir }}"
+    owner: "{{ datomic_user }}"
+    group: "{{ datomic_group }}"
+    mode: 755
 
 - name: Make Datomic log directory
-  file: state=directory path="{{ datomic_log_dir }}" owner="{{ datomic_user }}" group="{{ datomic_group }}" mode=755
+  file:
+    state: directory
+    path: "{{ datomic_log_dir }}"
+    owner: "{{ datomic_user }}"
+    group: "{{ datomic_group }}"
+    mode: 755
 
 - name: Check Datomic installation
   stat: path="{{ datomic_dir }}/runtime"
@@ -13,7 +25,10 @@
   ignore_errors: true
 
 - name: Install unzip package
-  apt: pkg=unzip state=present update-cache=yes
+  apt:
+    pkg: unzip
+    state: present
+    update-cache: yes
 
 - name: Download Datomic
   get_url:
