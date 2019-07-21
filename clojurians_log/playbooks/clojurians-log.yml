@@ -13,6 +13,7 @@
     database_user: "clojurians_log"
     database_hostname: "localhost"
     database_port: 5432
+    clojurians_app_host_name: "clojurians-log.clojureverse.org"
     clojurians_app_http_port: 4242
     datomic_pro_version: 0.9.5561.56
     datomic_object_cache_max: 2g
@@ -189,7 +190,7 @@
               location @proxy_app {
                   proxy_pass http://localhost:{{ clojurians_app_http_port }};
                   proxy_read_timeout 90;
-                  proxy_redirect http://localhost:{{ clojurians_app_http_port }} https://clojurians-log.clojureverse.org;
+                  proxy_redirect http://localhost:{{ clojurians_app_http_port }} https://{{ clojurians_app_host_name }};
                   proxy_set_header Host $host;
                   proxy_set_header X-Real-IP $remote_addr;
                   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
