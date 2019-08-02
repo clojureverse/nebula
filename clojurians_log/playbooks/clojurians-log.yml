@@ -182,7 +182,7 @@
         acme_sh_copy_certs_to_path: "{{ cert_dir }}"
         acme_sh_list_domains: True
         acme_sh_default_staging: True
-        acme_sh_default_force_renew: False
+        acme_sh_default_force_renew: False # set to True initially, once
         acme_sh_default_debug: True
         acme_sh_default_dns_provider: "dns_gcloud"
         acme_sh_default_dns_provider_api_keys: {}
@@ -192,6 +192,7 @@
             extra_flags_renew: "--challenge-alias {{ clojurians_app_challenge_fqdn }}"
     # NGINX
     # TODO: See also https://michael.lustfield.net/nginx/getting-a-perfect-ssl-labs-score
+    # TODO: See also https://gist.github.com/nrollr/9a39bb636a820fb97eec2ed85e473d38
     - name: Install and configure nginx for SSL
       tags: [ nginx, never ]    # TODO: Remove when done testing
       import_role:
@@ -224,8 +225,7 @@
                   }
 
               }
-              ssl_trusted_certificate     {{ cert_dir }}/{{ clojurians_app_fqdn }}.pem;
-              ssl_certificate             {{ cert_dir }}/{{ clojurians_app_fqdn }}.crt;
+              ssl_certificate             {{ cert_dir }}/{{ clojurians_app_fqdn }}.pem;
               ssl_certificate_key         {{ cert_dir }}/{{ clojurians_app_fqdn }}.key;
               ssl on;
               # enable session resumption to improve https performance
