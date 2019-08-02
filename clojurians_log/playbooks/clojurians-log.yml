@@ -13,7 +13,9 @@
     database_user: "clojurians_log"
     database_hostname: "localhost"
     database_port: 5432
-    clojurians_app_host_name: "clojurians-log.clojureverse.org"
+    cert_dir: "/etc/ssl/ansible"
+    clojurians_app_fqdn: "clojurians-log-staging.clojureverse.org" # TODO: remove staging when tested
+    clojurians_app_challenge_fqdn: "_acme-challenge.{{ clojurians_app_fqdn | regex_search('(^[^\\.]+)') }}.acmechallenges.clojureverse.org"
     clojurians_app_http_port: 4242
     datomic_pro_version: 0.9.5561.56
     datomic_object_cache_max: 2g
@@ -157,12 +159,41 @@
         clojure_app_health_check_url: "http://localhost:{{clojurians_app_http_port}}/healthcheck"
         clojure_app_service_start_after: datomic.service
     - name: Install the Clojurians Log app
+      tags: clojurians-log
       import_role:
         name: plexus.clojurians-log
-      tags: clojurians-log
-    # Nginx
-    - name: Install and configure nginx
-      tags: nginx
+    - name: Prepare for ACME installs
+      tags: setup-acme
+      import_role:
+        name: setup_acme
+    - name: Ensure gcloud is installed for use in ACME DNS-01 challenge.
+      tags: gcloud
+      import_role:
+        name: setup_gcloud
+    - name: Generate and install a LetsEncrypt SSL Cert.
+      tags: [ acme, never]
+      import_role:
+        name: nickjj.acme_sh
+      vars:
+        acme_sh_git_update: False
+        acme_sh_git_clone_dest: "/usr/local/src/acme.sh"
+        acme_sh_upgrade: False
+        acme_sh_account_email: "arne@arnebrasseur.net"
+        acme_sh_copy_certs_to_path: "{{ cert_dir }}"
+        acme_sh_list_domains: True
+        acme_sh_default_staging: True
+        acme_sh_default_force_renew: False
+        acme_sh_default_debug: True
+        acme_sh_default_dns_provider: "dns_gcloud"
+        acme_sh_default_dns_provider_api_keys: {}
+        acme_sh_domains:
+          - domains: ["{{ clojurians_app_fqdn }}"]
+            extra_flags_issue: "--challenge-alias {{ clojurians_app_challenge_fqdn }}"
+            extra_flags_renew: "--challenge-alias {{ clojurians_app_challenge_fqdn }}"
+    # NGINX
+    # TODO: See also https://michael.lustfield.net/nginx/getting-a-perfect-ssl-labs-score
+    - name: Install and configure nginx for SSL
+      tags: [ nginx, never ]    # TODO: Remove when done testing
       import_role:
         name: geerlingguy.nginx
       vars:
@@ -175,7 +206,12 @@
           proxy_set_header   Host $http_host;
         nginx_vhosts:
           - listen: 80
-            server_name: "localhost"
+            server_name: "localhost {{ clojurians_app_fqdn }}"
+            state: "present"
+            return: "301 https://{{ clojurians_app_fqdn }}$request_uri"
+          - listen: "443 ssl http2"
+            server_name: "localhostssl {{ clojurians_app_fqdn }}"
+            state: "present"
             nginx_access_log: off
             extra_parameters: |
               location / {
@@ -188,16 +224,40 @@
                   }
 
               }
+              ssl_trusted_certificate     {{ cert_dir }}/{{ clojurians_app_fqdn }}.pem;
+              ssl_certificate             {{ cert_dir }}/{{ clojurians_app_fqdn }}.crt;
+              ssl_certificate_key         {{ cert_dir }}/{{ clojurians_app_fqdn }}.key;
+              ssl on;
+              # enable session resumption to improve https performance
+              # http://vincent.bernat.im/en/blog/2011-ssl-session-reuse-rfc5077.html
+              ssl_session_cache shared:SSL:50m;
+              ssl_session_timeout 5m;
+              # enables server-side protection from BEAST attacks
+              # http://blog.ivanristic.com/2013/09/is-beast-still-a-threat.html
+              ssl_prefer_server_ciphers on;
+              # disable SSLv3 (enabled by default since nginx 0.8.19) since it's less secure than TLS
+              # http://en.wikipedia.org/wiki/Secure_Sockets_Layer#SSL_3.0
+              ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+              # ciphers chosen for forward secrecy and compatibility
+              # http://blog.ivanristic.com/2013/08/configuring-apache-nginx-and-openssl-for-forward-secrecy.html
+              ssl_ciphers "ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4";
+              # enable ocsp stapling (mechanism by which a site can convey certificate revocation information
+              # to visitors in a privacy-preserving, scalable manner)
+              # http://blog.mozilla.org/security/2013/07/29/ocsp-stapling-in-firefox/
+              resolver 8.8.8.8;
+              ssl_stapling on;
+              # ssl_session_cache builtin:1000  shared:SSL:10m;
+              ssl_dhparam {{ cert_dir }}/dhparam.pem;
+              add_header Strict-Transport-Security 'max-age=31536000';
               location @proxy_app {
                   proxy_pass http://localhost:{{ clojurians_app_http_port }};
                   proxy_read_timeout 90;
-                  proxy_redirect http://localhost:{{ clojurians_app_http_port }} https://{{ clojurians_app_host_name }};
+                  proxy_redirect http://localhost:{{ clojurians_app_http_port }} https://{{ clojurians_app_fqdn }};
                   proxy_set_header Host $host;
                   proxy_set_header X-Real-IP $remote_addr;
                   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                   proxy_set_header X-Forwarded-Proto $scheme;
               }
-
     - name: Setup and config rtmbot
       tags: rtmbot
       import_role:
