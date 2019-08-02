@@ -1,9 +1,6 @@
 ---
 # Setup for getting ACME ssl certs.
 - name: Ensure dhparam dir.
-  tags:
-    - acme
-    - dhparams
   file:
     path: "{{ dhparam_dir }}"
     state: directory
@@ -11,9 +8,6 @@
     group: root
     mode: 0755
 - name: generate dhparam.pem
-  tags:
-    - acme
-    - dhparams
-  command: openssl dhparam -out "{{ dhparam_dir }}/dhparam.pem" "{{ dhparam_bits }}"
+  command: openssl dhparam -out "{{ dhparam_dir }}/dhparam.pem" -dsaparam "{{ dhparam_bits }}"
   args:
     creates: "{{ dhparam_dir }}/dhparam.pem"
