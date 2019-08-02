@@ -73,8 +73,9 @@ Vagrant.configure("2") do |config|
   config.vm.provision "ansible_local" do |ansible|
     ansible.playbook = "playbooks/clojurians-log.yml"
     ansible.compatibility_mode = "2.0"
+    ansible.raw_arguments = Shellwords.shellsplit(ENV['ANSIBLE_ARGS']) if ENV['ANSIBLE_ARGS']
     ansible.extra_vars = { ansible_python_interpreter: "/usr/bin/python3",
-                           use_demo_logs: true
+                           use_demo_logs: true # for only loading the demo logs on a vagrant host
                          }
   end
 end
