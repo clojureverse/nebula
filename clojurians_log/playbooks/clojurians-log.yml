@@ -39,6 +39,7 @@
         - openjdk-8-jdk         # For Clojure
         - python3
         - python3-pip
+        - python3-apt
         - rlwrap                # For clj
         - screen
         - unzip                 # for ansible unarchive module
