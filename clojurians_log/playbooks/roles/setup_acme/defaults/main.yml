@@ -1,0 +1,3 @@
+---
+dhparam_dir: "/etc/ssl/ansible"
+dhparam_bits: 2048
