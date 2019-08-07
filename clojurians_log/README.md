@@ -102,4 +102,5 @@ This is a work in progress and is subject to significant changes over time.
   - `echo '(use '"'"'clojurians-log.repl) (load-demo-data! "/var/clojure_app/logs")' | nc -N localhost 50505`
   - `sudo systemctl restart clojure_app`
 - On the host running vagrant, you can access the app at
-  - `http://127.0.0.1:2200/`
+  - `http://127.0.0.1:2200/` (http)
+  - `https://127.0.0.1:2201/`(https)
