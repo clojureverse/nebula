@@ -1,0 +1,3 @@
+---
+gcloud_keys_file: "/tmp/gcloud_keys.json"
+gcloud_credentials_db_file: "{{ ansible_env.HOME }}/.config/gcloud/credentials.db"

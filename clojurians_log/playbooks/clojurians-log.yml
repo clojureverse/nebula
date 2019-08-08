@@ -5,25 +5,34 @@
   # https://github.com/hashicorp/vagrant/issues/10914
   environment:
     DEBIAN_FRONTEND: "noninteractive"
+
   vars_files:
     - vars/clojurians_log_secrets.yml
+
   become: true
+
   vars:
     database_name: "clojurians_log_datomic"
     database_user: "clojurians_log"
     database_hostname: "localhost"
     database_port: 5432
+    cert_dir: "/etc/ssl/ansible"
+    clojurians_app_fqdn: "clojurians-log-staging.clojureverse.org" # TODO: remove staging when tested
+    clojurians_app_challenge_fqdn: "{{ clojurians_app_fqdn | regex_search('(^[^\\.]+)') }}.acmechallenges.clojureverse.org"
     clojurians_app_http_port: 4242
     datomic_pro_version: 0.9.5561.56
     datomic_object_cache_max: 2g
     clojure_app_env_vars: |
       JVM_OPTS="-Dclojure.server.myrepl={:port,50505,:accept,clojure.core.server/repl} -Xmx8g -Xms2g -Ddatomic.ObjectCacheMax=7g -Ddatomic.memcachedServers=127.0.0.1:11211"
+
   tasks:
+
     # Keys first, then repos, then the dist-upgrade.
     - name: Add repository for ansible
       apt_repository:
         repo: ppa:ansible/ansible
         state: present
+
     - name: Install the lastest versions of listed packages
       apt:
         name: "{{ item }}"
@@ -38,9 +47,11 @@
         - openjdk-8-jdk         # For Clojure
         - python3
         - python3-pip
+        - python3-apt
         - rlwrap                # For clj
         - screen
         - unzip                 # for ansible unarchive module
+
     - name: Purge installed apps
       apt:
         name: "{{ item }}"
@@ -48,14 +59,17 @@
         purge: yes
       loop:
         - ubuntu-web-launchers  # to remove Amazon icon from launcher
+
     - name: Do a dist-upgrade
       apt:
         upgrade: dist
         update_cache: yes
+
     # Unfortunately, the apt version of lein is quite old.
     - name: Set up Leiningen
       import_role:
         name: leiningen
+
     # Too bad we cannot use the alternatives module
     # as it would require listing each java command.
     - name: Check if jdk8 is default
@@ -66,53 +80,58 @@
     - name: Choose jdk8 as default for Clojure
       command: update-java-alternatives --set java-1.8.0-openjdk-amd64
       when: chkjava.stdout.find('link currently points to /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java') == -1
+
     # Clean up
     - name: Remove unneeded apt stuff
       apt:
         autoremove: yes
+
     # Firewall settings
     - name: Set firewall settings to allow ssh, http/s
       import_role:
         name: firewall
+
     #########
     # Now set up the users
     - name: Set up plexus
       import_role:
         name: setup_user
-      tags: setup_user
+      tags: setup-user
       vars:
-        username: plexus
-        full_name: Arne Brasseur
-        github_username: plexus
+        username: "plexus"
+        full_name: "Arne Brasseur"
+        github_username: "plexus"
     - name: Set up lispyclouds
       import_role:
         name: setup_user
-      tags: setup_user
+      tags: setup-user
       vars:
-        username: lispyclouds
-        full_name: Rahul De
-        github_username: lispyclouds
+        username: "lispyclouds"
+        full_name: "Rahul De"
+        github_username: "lispyclouds"
     - name: Set up victorb
       import_role:
         name: setup_user
-      tags: setup_user
+      tags: setup-user
       vars:
-        username: victorb
-        full_name: Victor Bjelkholm
-        github_username: victorb
+        username: "victorb"
+        full_name: "Victor Bjelkholm"
+        github_username: "victorb"
     - name: Set up dorab
       import_role:
         name: setup_user
-      tags: setup_user
+      tags: setup-user
       vars:
-        username: dorab
-        full_name: Dorab Patel
-        github_username: bombaywalla
+        username: "dorab"
+        full_name: "Dorab Patel"
+        github_username: "bombaywalla"
     # TODO: might want to remove some users such as vagrant or ubuntu??
+
     # Harden sshd. Note: This MUST come after at least one sudoable user having a pubkey login.
     - name: Harden sshd
       import_role:
         name: harden_sshd
+
     # Now install the programs
     - name: Install memcached
       import_role:
@@ -120,6 +139,7 @@
       tags: memcached
       vars:
         memcached_memory_limit: 4096
+
     - name: Install postgres
       import_role:
         name: geerlingguy.postgresql
@@ -132,12 +152,14 @@
             password: "{{ database_password }}"
             db: "{{ database_name }}"
             priv: "ALL"
+
     - name: Install datomic-pro
       import_role:
         name: plexus.datomic-pro
       tags: datomic
       vars:
         datomic_memcached: 127.0.0.1:11211
+
     # Now the Clojurians Log app stuff
     - name: Install the Clojure Web app
       import_role:
@@ -154,12 +176,46 @@
         clojure_app_main_command: "/usr/local/bin/lein with-profile +production,-dev run {{ clojure_app_home_dir }}/config.edn"
         clojure_app_health_check_url: "http://localhost:{{clojurians_app_http_port}}/healthcheck"
         clojure_app_service_start_after: datomic.service
+
     - name: Install the Clojurians Log app
+      tags: clojurians-log
       import_role:
         name: plexus.clojurians-log
-      tags: clojurians-log
-    # Nginx
-    - name: Install and configure nginx
+
+    - name: Prepare for ACME installs
+      tags: setup-acme
+      import_role:
+        name: setup_acme
+
+    - name: Ensure gcloud is installed for use in ACME DNS-01 challenge.
+      tags: gcloud
+      import_role:
+        name: setup_gcloud
+
+    - name: Generate and install a LetsEncrypt SSL Cert.
+      tags: acme
+      import_role:
+        name: nickjj.acme_sh
+      vars:
+        acme_sh_git_update: False
+        acme_sh_git_clone_dest: "/usr/local/src/acme.sh"
+        acme_sh_upgrade: False
+        acme_sh_account_email: "arne@arnebrasseur.net"
+        acme_sh_copy_certs_to_path: "{{ cert_dir }}"
+        acme_sh_list_domains: True
+        acme_sh_default_staging: True # TODO: set to False after testing
+        acme_sh_default_force_issue: False # Set to True initially, once
+        acme_sh_default_dns_provider: "dns_gcloud"
+        acme_sh_default_dns_provider_api_keys: { "FOO": "BAR" } # Cannot be empty
+        acme_sh_domains:
+          - domains: ["{{ clojurians_app_fqdn }}"]
+            extra_flags_issue: "--challenge-alias {{ clojurians_app_challenge_fqdn }}"
+            extra_flags_renew: "--challenge-alias {{ clojurians_app_challenge_fqdn }}"
+
+    # NGINX
+    # TODO: See also https://michael.lustfield.net/nginx/getting-a-perfect-ssl-labs-score
+    # TODO: See also https://gist.github.com/nrollr/9a39bb636a820fb97eec2ed85e473d38
+    - name: Install and configure nginx for SSL
       tags: nginx
       import_role:
         name: geerlingguy.nginx
@@ -173,7 +229,12 @@
           proxy_set_header   Host $http_host;
         nginx_vhosts:
           - listen: 80
-            server_name: "localhost"
+            server_name: "localhost {{ clojurians_app_fqdn }}"
+            state: "present"
+            return: "301 https://{{ clojurians_app_fqdn }}$request_uri"
+          - listen: "443 ssl http2"
+            server_name: "localhostssl {{ clojurians_app_fqdn }}"
+            state: "present"
             nginx_access_log: off
             extra_parameters: |
               location / {
@@ -186,10 +247,34 @@
                   }
 
               }
+              ssl_certificate             {{ cert_dir }}/{{ clojurians_app_fqdn }}.pem;
+              ssl_certificate_key         {{ cert_dir }}/{{ clojurians_app_fqdn }}.key;
+              ssl on;
+              # enable session resumption to improve https performance
+              # http://vincent.bernat.im/en/blog/2011-ssl-session-reuse-rfc5077.html
+              ssl_session_cache shared:SSL:50m;
+              ssl_session_timeout 5m;
+              # enables server-side protection from BEAST attacks
+              # http://blog.ivanristic.com/2013/09/is-beast-still-a-threat.html
+              ssl_prefer_server_ciphers on;
+              # disable SSLv3 (enabled by default since nginx 0.8.19) since it's less secure than TLS
+              # http://en.wikipedia.org/wiki/Secure_Sockets_Layer#SSL_3.0
+              ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+              # ciphers chosen for forward secrecy and compatibility
+              # http://blog.ivanristic.com/2013/08/configuring-apache-nginx-and-openssl-for-forward-secrecy.html
+              ssl_ciphers "ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4";
+              # enable ocsp stapling (mechanism by which a site can convey certificate revocation information
+              # to visitors in a privacy-preserving, scalable manner)
+              # http://blog.mozilla.org/security/2013/07/29/ocsp-stapling-in-firefox/
+              resolver 8.8.8.8;
+              ssl_stapling on;
+              # ssl_session_cache builtin:1000  shared:SSL:10m;
+              ssl_dhparam {{ cert_dir }}/dhparam.pem;
+              add_header Strict-Transport-Security 'max-age=31536000';
               location @proxy_app {
                   proxy_pass http://localhost:{{ clojurians_app_http_port }};
                   proxy_read_timeout 90;
-                  proxy_redirect http://localhost:{{ clojurians_app_http_port }} https://clojurians-log.clojureverse.org;
+                  proxy_redirect http://localhost:{{ clojurians_app_http_port }} https://{{ clojurians_app_fqdn }};
                   proxy_set_header Host $host;
                   proxy_set_header X-Real-IP $remote_addr;
                   proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

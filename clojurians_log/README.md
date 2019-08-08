@@ -21,10 +21,10 @@ This is a work in progress and is subject to significant changes over time.
 - Send your GPG public key ID to either of the maintainers to be added to the secrets file.
 - Clone this repo.
 - In the clojurians_log dir:
-  - Run `export TF_VAR_exoscale_api_key="The API key here"`
-  - Run `export TF_VAR_exoscale_secret_key="The secret key here"`
+  - Run `export TF_VAR_exoscale_api_key="The Exoscale API key here"`
+  - Run `export TF_VAR_exoscale_secret_key="The Exoscale secret key here"`
+  - Run `export TF_VAR_exoscale_ssh_keypair_name="The Exoscale key pair name you created"`
   - In the `playbooks/vars` dir:
-    - Run `export TF_VAR_exoscale_ssh_keypair_name="The key pair name you created"`
     - Run `gpg --decrypt clojurians_log_secrets.yml.gpg > clojurians_log_secrets.yml`
     - (Optional, for maintainers) Run:
       ```bash
@@ -44,6 +44,7 @@ This is a work in progress and is subject to significant changes over time.
   - Make sure all looks good.
   - Run `terraform apply plan`
   - To destroy: `terraform destroy`
+  - To ssh into the instance `ssh $(terraform output username)@$(terraform output ip_address)`
 
 ## How to use Vagrant
 
@@ -102,4 +103,5 @@ This is a work in progress and is subject to significant changes over time.
   - `echo '(use '"'"'clojurians-log.repl) (load-demo-data! "/var/clojure_app/logs")' | nc -N localhost 50505`
   - `sudo systemctl restart clojure_app`
 - On the host running vagrant, you can access the app at
-  - `http://127.0.0.1:2200/`
+  - `http://127.0.0.1:2200/` (http)
+  - `https://127.0.0.1:2201/`(https)

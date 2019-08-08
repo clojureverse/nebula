@@ -21,3 +21,10 @@ resource "exoscale_compute" "clojurians_log" {
     "${exoscale_security_group.clojurians_log.name}",
   ]
 }
+
+output "ip_address" {
+  value = exoscale_compute.clojurians_log.ip_address
+}
+output "username" {
+  value = exoscale_compute.clojurians_log.username
+}

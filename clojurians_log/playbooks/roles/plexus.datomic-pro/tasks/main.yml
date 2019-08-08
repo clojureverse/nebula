@@ -1,11 +1,23 @@
 - name: Create Datomic user.
-  user: name="{{ datomic_user }}" state=present
+  user:
+    name: "{{ datomic_user }}"
+    state: present
 
 - name: Create Datomic directory
-  file: state=directory path="{{ datomic_dir }}" owner="{{ datomic_user }}" group="{{ datomic_user }}" mode=755
+  file:
+    state: directory
+    path: "{{ datomic_dir }}"
+    owner: "{{ datomic_user }}"
+    group: "{{ datomic_group }}"
+    mode: 755
 
 - name: Make Datomic log directory
-  file: state=directory path="{{ datomic_log_dir }}" owner="{{ datomic_user }}" group="{{ datomic_group }}" mode=755
+  file:
+    state: directory
+    path: "{{ datomic_log_dir }}"
+    owner: "{{ datomic_user }}"
+    group: "{{ datomic_group }}"
+    mode: 755
 
 - name: Check Datomic installation
   stat: path="{{ datomic_dir }}/runtime"
@@ -13,7 +25,10 @@
   ignore_errors: true
 
 - name: Install unzip package
-  apt: pkg=unzip state=present update-cache=yes
+  apt:
+    pkg: unzip
+    state: present
+    update-cache: yes
 
 - name: Download Datomic
   get_url:
@@ -31,26 +46,28 @@
   when: not datomic_link.stat.exists
 
 - name: Link datomic
-  file: src="{{ datomic_dir }}/datomic-pro-{{ datomic_pro_version }}"
-        dest="{{ datomic_dir }}/runtime"
-        owner="{{ datomic_user }}"
-        group="{{ datomic_group }}"
-        state=link
+  file:
+    src: "{{ datomic_dir }}/datomic-pro-{{ datomic_pro_version }}"
+    dest: "{{ datomic_dir }}/runtime"
+    owner: "{{ datomic_user }}"
+    group: "{{ datomic_group }}"
+    state: link
   when: not datomic_link.stat.exists
   notify: restart datomic
 
-# TODO: find out why this is not idempotent. Perhaps the log files?
 - name: datomic dir permissions
   file:
     path: "{{ datomic_dir }}"
-    owner: datomic
-    group: datomic
+    owner: "{{ datomic_user }}"
+    group: "{{ datomic_group }}"
     recurse: true
 
 - name: Upload CREATE TABLE datomic_kvs script
   copy:
     src: templates/postgresql_create_datomic_kvs.sql
     dest: "{{ datomic_dir }}/postgresql_create_datomic_kvs.sql"
+    owner: "{{ datomic_user }}"
+    group: "{{ datomic_group }}"
 
 - name: Check if the datomic_kvs table exists
   shell: >-
@@ -79,6 +96,8 @@
   template:
     src: templates/datomic-transactor.properties.j2
     dest: "{{ datomic_dir }}/datomic-transactor.properties"
+    owner: "{{ datomic_user }}"
+    group: "{{ datomic_group }}"
   notify: restart datomic
 
 - name: Upload Datomic Systemd startup script

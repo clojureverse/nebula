@@ -1,0 +1,40 @@
+---
+# Google Cloud Platform. For DNS provider.
+- name: Ensure GCP signing key
+  apt_key:
+    url: "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+    keyring: "/usr/share/keyrings/cloud.google.gpg"
+    state: present
+- name: Ensure GCP apt repo
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main"
+    filename: "google-cloud-sdk"
+    state: present
+- name: Ensure latest GCP SDK
+  apt:
+    name: "google-cloud-sdk"
+    state: latest
+    update_cache: yes
+  ignore_errors: "{{ ansible_check_mode }}"
+- name: Check if gcloud credentials db already esists
+  stat:
+    path: "{{ gcloud_credentials_db_file }}"
+  register: chk_gcp_cred_db
+  check_mode: no
+- name: Create the temporary gcloud service account keys file
+  template:
+    src: templates/gcloud_credentials.j2
+    dest: "{{ gcloud_keys_file }}"
+    mode: 0600
+  when: not chk_gcp_cred_db.stat.exists
+- name: Authenticate with GCP and update credentials db
+  command: gcloud --quiet auth activate-service-account --key-file="{{ gcloud_keys_file }}" --project="{{ gcloud_project_id }}"
+  args:
+    creates: "{{ gcloud_credentials_db_file }}"
+  when:
+    - not chk_gcp_cred_db.stat.exists
+    - not ansible_check_mode
+- name: Ensure that the temporary gcloud keys file is removed
+  file:
+    name: "{{ gcloud_keys_file }}"
+    state: absent
