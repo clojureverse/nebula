@@ -44,7 +44,8 @@ This is a work in progress and is subject to significant changes over time.
   - Make sure all looks good.
   - Run `terraform apply plan`
   - To destroy: `terraform destroy`
-  - To ssh into the instance `ssh $(terraform output username)@$(terraform output ip_address)`
+  - To ssh into the instance
+	- `ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $(terraform output username)@$(terraform output ip_address)`
 
 ## How to use Vagrant
 
