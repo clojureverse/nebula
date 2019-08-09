@@ -30,4 +30,4 @@ YAML
 ansible-playbook bootstrap.yml -i hosts >> ~/ansible.log
 
 # Setup clojurians_log
-echo ansible-playbook clojurians-log.yml -i hosts ${ansible_playbook_params} >> ~/ansible.log
+echo 'ansible-playbook clojurians-log.yml -i hosts ${ansible_playbook_params}' >> ~/ansible.log
