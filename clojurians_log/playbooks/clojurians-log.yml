@@ -27,18 +27,6 @@
 
   tasks:
 
-    - name: Debugging
-      debug:
-        var: ansible_env
-
-    - name: Debugging
-      debug:
-        var: ansible_become_user
-
-    - name: Aborting
-      fail:
-        msg: aborting during debug
-
     # Keys first, then repos, then the dist-upgrade.
     - name: Add repository for ansible
       apt_repository:
