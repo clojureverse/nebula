@@ -6,6 +6,9 @@ provider "exoscale" {
 
 data "template_file" "userdata" {
   template = "${file("userdata.sh.tmpl")}"
+  vars = {
+    ansible_playbook_params = "--extras-vars \"user_demo_logs=true acme_sh_default_force_issue=true\""
+  }
 }
 
 resource "exoscale_compute" "clojurians_log" {

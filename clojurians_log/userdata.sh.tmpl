@@ -15,7 +15,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt install -y ansible
 cd ~
 
 # Clone repo and switch to it
-git clone https://github.com/clojureverse/nebula
+git clone --single-branch --branch exoscale-staging https://github.com/clojureverse/nebula
 cd nebula/clojurians_log
 
 # Start provisioning
@@ -30,4 +30,4 @@ YAML
 ansible-playbook bootstrap.yml -i hosts >> ~/ansible.log
 
 # Setup clojurians_log
-ansible-playbook clojurians-log.yml -i hosts >> ~/ansible.log
+ansible-playbook clojurians-log.yml -i hosts ${ansible_playbook_params} >> ~/ansible.log
