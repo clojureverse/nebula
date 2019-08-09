@@ -7,7 +7,7 @@ provider "exoscale" {
 data "template_file" "userdata" {
   template = "${file("userdata.sh.tmpl")}"
   vars = {
-    ansible_playbook_params = "--extra-vars \"user_demo_logs=true acme_sh_default_force_issue=true\""
+    ansible_playbook_params = "--extra-vars \"use_demo_logs=true acme_sh_default_force_issue=true\""
   }
 }
 
