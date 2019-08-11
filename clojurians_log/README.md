@@ -47,6 +47,7 @@ This is a work in progress and is subject to significant changes over time.
   - To ssh into the instance
 	- `ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $(terraform output username)@$(terraform output ip_address)`
   - You wil want to reboot the instance after provisioning the first time.
+  - You will need to update the IP address on the host name in the DNS as well.
 
 ## How to use Vagrant
 

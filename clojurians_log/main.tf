@@ -8,7 +8,7 @@ data "template_file" "userdata" {
   template = "${file("userdata.sh.tmpl")}"
   vars = {
     # For development / testing, use (uncomment) the line below
-    ansible_playbook_params = "--extra-vars \"ansible_python_interpreter=/usr/bin/python3 clojurians_app_fqdn=clojurians-log-staging.clojureverse.org use_demo_logs=true acme_sh_default_force_issue=true acme_sh_default_staging=true\""
+    ansible_playbook_params = "--extra-vars \"ansible_python_interpreter=/usr/bin/python3 clojurians_app_fqdn=clojurians-log-staging.clojureverse.org use_demo_logs=true acme_sh_default_force_issue=true\""
     git_clone_params = "--single-branch --branch exoscale-staging"
     # For normal production use, the values set in ansible are appropriate.
     # So, can leave the following empty.
