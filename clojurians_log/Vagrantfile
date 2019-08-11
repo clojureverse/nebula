@@ -75,8 +75,10 @@ Vagrant.configure("2") do |config|
     ansible.compatibility_mode = "2.0"
     ansible.raw_arguments = Shellwords.shellsplit(ENV['ANSIBLE_ARGS']) if ENV['ANSIBLE_ARGS']
     ansible.extra_vars = { ansible_python_interpreter: "/usr/bin/python3",
+                           clojurians_app_fqdn: "clojurians-log.clojureverse.org",
                            use_demo_logs: true, # for only loading the demo logs on a vagrant host
                            acme_sh_default_force_issue: true, # Force ACME cert issue on a vagrant host
+                           acme_sh_default_staging: true,     # Use the ACME staging server
                          }
   end
 end
