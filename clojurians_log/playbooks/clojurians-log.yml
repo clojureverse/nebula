@@ -203,7 +203,7 @@
         acme_sh_account_email: "arne@arnebrasseur.net"
         acme_sh_copy_certs_to_path: "{{ cert_dir }}"
         acme_sh_list_domains: True
-        acme_sh_default_staging: True # TODO: set to False after testing
+        acme_sh_default_staging: False
         acme_sh_default_force_issue: False # Set to True initially, once
         acme_sh_default_dns_provider: "dns_gcloud"
         acme_sh_default_dns_provider_api_keys: { "FOO": "BAR" } # Cannot be empty

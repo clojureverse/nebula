@@ -7,7 +7,13 @@ provider "exoscale" {
 data "template_file" "userdata" {
   template = "${file("userdata.sh.tmpl")}"
   vars = {
-    ansible_playbook_params = "--extra-vars \"use_demo_logs=true acme_sh_default_force_issue=true\""
+    # For development / testing, use (uncomment) the line below
+    ansible_playbook_params = "--extra-vars \"use_demo_logs=true acme_sh_default_force_issue=true acme_sh_default_staging=true\""
+    git_clone_params = "--single-branch --branch exoscale-staging"
+    # For normal production use, the values set in ansible are appropriate.
+    # So, can leave the following empty.
+    # ansible_playbook_params = ""
+    # git_clone_params = ""
   }
 }
 

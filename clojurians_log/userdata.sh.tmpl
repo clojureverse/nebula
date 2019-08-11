@@ -15,7 +15,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt install -y ansible
 cd ~
 
 # Clone repo and switch to it
-git clone --single-branch --branch exoscale-staging https://github.com/clojureverse/nebula
+git clone ${git_clone_params} https://github.com/clojureverse/nebula
 cd nebula/clojurians_log
 
 # Start provisioning
