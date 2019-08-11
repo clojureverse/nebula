@@ -46,6 +46,7 @@ This is a work in progress and is subject to significant changes over time.
   - To destroy: `terraform destroy`
   - To ssh into the instance
 	- `ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $(terraform output username)@$(terraform output ip_address)`
+  - You wil want to reboot the instance after provisioning the first time.
 
 ## How to use Vagrant
 
@@ -87,9 +88,9 @@ This is a work in progress and is subject to significant changes over time.
   you can use `vagrant provision`.
 - To shut down the VM, use `vagrant halt`. 
 
-## How to deploy the Clojurians-log app
+## How to deploy the Clojurians-log app (with demo data)
 
-- Deploy an instance of the server at Exoscale (using Terraform) or Vagrant.
+- Deploy an instance of the server at Exoscale (using Terraform) or Vagrant, as described above.
 - Clone the master branch of the clojurian-log-app to a local repository on your machine.
   - `git clone --single-branch --branch master https://github.com/clojureverse/clojurians-log-app`
   - `cd clojurians-log-app`
@@ -97,12 +98,20 @@ This is a work in progress and is subject to significant changes over time.
   The path to the repo is `/var/clojure_app/repo`.
   So, for a local vagrant instance you might use:
   - `git remote add vagrant ssh://clojure_app@127.0.0.1:2222/var/clojure_app/repo`
+  For the Exoscale instance you might use:
+  - `git remote add exoscale ssh://clojure_app@ip_address_of_instance/var/clojure_app/repo`
+  You should replace `ip_address_of_instance` in the command above with the IP address of the Exoscale instance.
 - You can now make changes (if any) to the local repo and when ready to deploy to vagrant, use:
   - `git push vagrant master`
-- Then log into the vagrant guest as `clojure_app`.
-- On the vagrant guest, connect to the app and load up the demo log files, then restart the app.
+  or
+  - `git push exoscale  master`
+- Then log into the instance (exoscale or vagrant guest)  as `clojure_app`.
+- On the instance, connect to the app and load up the demo log files, then restart the app.
   - `echo '(use '"'"'clojurians-log.repl) (load-demo-data! "/var/clojure_app/logs")' | nc -N localhost 50505`
   - `sudo systemctl restart clojure_app`
-- On the host running vagrant, you can access the app at
+- On the host running vagrant, you can access the app from the vagrant host at
   - `http://127.0.0.1:2200/` (http)
   - `https://127.0.0.1:2201/`(https)
+- On the Exoscale instance, you can use
+  - `http://ip_address_of_instance (http)`
+  - `https://ip_address_of_instance (https)`
