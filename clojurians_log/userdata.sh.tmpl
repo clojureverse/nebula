@@ -15,19 +15,23 @@ sudo DEBIAN_FRONTEND=noninteractive apt install -y ansible
 cd ~
 
 # Clone repo and switch to it
-git clone https://github.com/clojureverse/nebula
+git clone ${git_clone_params} https://github.com/clojureverse/nebula
 cd nebula/clojurians_log
 
 # Start provisioning
 cd playbooks
 
 # Barf the secrets file
-cat > vars/clojurians_log_secrets.yml << YAML
-${file("playbooks/vars/clojurians_log_secrets.yml")}
+# The base64 stuff is to prevent terraform from munging the file (for example backslash escapes)
+# since terraform treats the contents of this template file as a string (and so re-escapes the backslashes).
+cat > vars/clojurians_log_secrets.yml.b64 << YAML
+${filebase64("playbooks/vars/clojurians_log_secrets.yml")}
 YAML
+
+base64 --decode < vars/clojurians_log_secrets.yml.b64 > vars/clojurians_log_secrets.yml
 
 # Bootstrap the instance
 ansible-playbook bootstrap.yml -i hosts >> ~/ansible.log
 
 # Setup clojurians_log
-ansible-playbook clojurians-log.yml -i hosts >> ~/ansible.log
+HOME=/root ansible-playbook clojurians-log.yml -i hosts ${ansible_playbook_params} >> ~/ansible.log

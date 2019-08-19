@@ -17,7 +17,7 @@
     database_hostname: "localhost"
     database_port: 5432
     cert_dir: "/etc/ssl/ansible"
-    clojurians_app_fqdn: "clojurians-log-staging.clojureverse.org" # TODO: remove staging when tested
+    clojurians_app_fqdn: "clojurians-log.clojureverse.org"
     clojurians_app_challenge_fqdn: "{{ clojurians_app_fqdn | regex_search('(^[^\\.]+)') }}.acmechallenges.clojureverse.org"
     clojurians_app_http_port: 4242
     datomic_pro_version: 0.9.5561.56
@@ -203,7 +203,7 @@
         acme_sh_account_email: "arne@arnebrasseur.net"
         acme_sh_copy_certs_to_path: "{{ cert_dir }}"
         acme_sh_list_domains: True
-        acme_sh_default_staging: True # TODO: set to False after testing
+        acme_sh_default_staging: False
         acme_sh_default_force_issue: False # Set to True initially, once
         acme_sh_default_dns_provider: "dns_gcloud"
         acme_sh_default_dns_provider_api_keys: { "FOO": "BAR" } # Cannot be empty
