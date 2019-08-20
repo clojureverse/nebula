@@ -12,10 +12,13 @@ data "template_file" "userdata" {
     # git_clone_params = "--single-branch --branch exoscale-deploy"
     # The following can be used for production
     ansible_playbook_params = "--extra-vars \"ansible_python_interpreter=/usr/bin/python3\""
-    git_clone_params = ""
+    git_clone_params = "--single-branch --branch exoscale-deploy"
   }
 }
 
+# TODO: It would be useful to have the instance name and the state to be
+# parameterized so that you could use this same terraform file for the
+# staging server and the production server.
 resource "exoscale_compute" "clojurians_log" {
   display_name = "clojurians-log"
   template = "Linux Ubuntu 18.04 LTS 64-bit"
