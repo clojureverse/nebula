@@ -1,38 +1,13 @@
 ---
-- name: Install rtmbot dependency
-  pip:
-    name: 'slackclient'
-  tags: rtmbot
-
-- name: Create rtmbot directory
-  file:
-    path: "{{ clojure_app_home_dir }}/rtmbot"
-    state: directory
-    owner: "{{ clojure_app_user }}"
-    group: "{{ clojure_app_user }}"
-  tags: rtmbot
-
-- name: Create rtmbot logs directory
-  file:
-    path: "{{ clojure_app_home_dir }}/rtmbot/logs"
-    state: directory
-    owner: "{{ clojure_app_user }}"
-    group: "{{ clojure_app_user }}"
-  tags: rtmbot
-
-- name: Install run-rtmbot.sh
-  template:
-    src: templates/run-rtmbot.sh.j2
-    dest: "{{ clojure_app_home_dir }}/rtmbot/run-rtmbot.sh"
-    owner: "{{ clojure_app_user }}"
-    group: "{{ clojure_app_user }}"
-    mode: 0755
-  tags: rtmbot
+- name: Install rtmbot
+  git:
+    repo: "https://github.com/clojureverse/rtmbot.git"
+    dest: "/var/rtmbot"
 
 - name: Install rtmbot.conf
   template:
     src: templates/rtmbot.conf.j2
-    dest: "{{ clojure_app_home_dir }}/rtmbot/rtmbot.conf"
+    dest: "/var/rtmbot/rtmbot.conf"
     owner: "{{ clojure_app_user }}"
     group: "{{ clojure_app_user }}"
     mode: 0644
