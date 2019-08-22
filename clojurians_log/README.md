@@ -14,7 +14,7 @@ This is a work in progress and is subject to significant changes over time.
   Contact either of the [maintainers](https://github.com/clojureverse/nebula#maintainers)
   for this.
 - Create your own SSH keypair on the Console: [guide](https://community.exoscale.com/documentation/compute/ssh-keypairs/)
-- Install Terraform v0.11+.
+- Install Terraform v0.12.6+.
 - Download the latest Exoscale terraform provider for your OS from [here](https://github.com/exoscale/terraform-provider-exoscale/releases).
 - Decompress the archive and follow [the plugin installation](https://www.terraform.io/docs/configuration/providers.html#third-party-plugins).
 - Install [GPG](https://gnupg.org/download/)
@@ -24,16 +24,24 @@ This is a work in progress and is subject to significant changes over time.
   - Run `export TF_VAR_exoscale_api_key="The Exoscale API key here"`
   - Run `export TF_VAR_exoscale_secret_key="The Exoscale secret key here"`
   - Run `export TF_VAR_exoscale_ssh_keypair_name="The Exoscale key pair name you created"`
+  - Run `bin/terraform_apply`
+  - To destroy: `terraform destroy`
+  - To ssh into the instance
+	- `ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $(terraform output username)@$(terraform output ip_address)`
+  - You wil want to reboot the instance after provisioning the first time. (why?)
+  - You will need to update the IP address on the host name in the DNS as well.
+
+The `terraform_apply script does the following`
   - In the `playbooks/vars` dir:
     - Run `gpg --decrypt clojurians_log_secrets.yml.gpg > clojurians_log_secrets.yml`
-    - (Optional, for maintainers) Run:
+    - If you need to update the secret file later on you'll have to do this:
       ```bash
       gpg --encrypt --recipient your_email \
                     --recipient others_emails \
                     ... all the other maintainers \
       clojurians_log_secrets.yml
       ```
-      to produce a newly encrypted file and check it in. 
+      to produce a newly encrypted file and check it in.
   - Run:
     ```bash
     terraform init \
@@ -41,13 +49,7 @@ This is a work in progress and is subject to significant changes over time.
       -backend-config="secret_key=${TF_VAR_exoscale_secret_key}"
     ```
   - Run `terraform plan -out plan`
-  - Make sure all looks good.
   - Run `terraform apply plan`
-  - To destroy: `terraform destroy`
-  - To ssh into the instance
-	- `ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $(terraform output username)@$(terraform output ip_address)`
-  - You wil want to reboot the instance after provisioning the first time.
-  - You will need to update the IP address on the host name in the DNS as well.
 
 ## How to use Vagrant
 
@@ -87,7 +89,7 @@ This is a work in progress and is subject to significant changes over time.
   You can log into it using `vagrant ssh`.
 - If you need to re-provision (for example, if you edit the Ansible scripts)
   you can use `vagrant provision`.
-- To shut down the VM, use `vagrant halt`. 
+- To shut down the VM, use `vagrant halt`.
 
 ## How to deploy the Clojurians-log app (with demo data)
 
