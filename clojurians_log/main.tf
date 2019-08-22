@@ -24,7 +24,7 @@ resource "exoscale_compute" "clojurians_log" {
   template = "Linux Ubuntu 18.04 LTS 64-bit"
   zone = "de-fra-1"
   size = "Large"
-  disk_size = 10
+  disk_size = 50
   key_pair = "${var.exoscale_ssh_keypair_name}"
   user_data = "${data.template_file.userdata.rendered}"
 
