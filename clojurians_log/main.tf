@@ -34,7 +34,7 @@ data "template_file" "userdata" {
 resource "exoscale_compute" "clojurians_log" {
   display_name = "${local.instance_name}"
   template = "Linux Ubuntu 18.04 LTS 64-bit"
-  zone = "de-fra-1"
+  zone = "ch-gva-2"
   size = "Large"
   disk_size = 50
   key_pair = "${var.exoscale_ssh_keypair_name}"
