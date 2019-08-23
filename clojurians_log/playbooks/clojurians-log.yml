@@ -28,7 +28,8 @@
 
   tasks:
     - name: Set up librato first so we have eyes
-      import_role: librato.librato
+      import_role:
+        name: librato.librato
       vars:
         librato_enabled_plugins: ['nginx', 'jvm', 'memcached']
 
