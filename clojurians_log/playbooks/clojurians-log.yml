@@ -22,9 +22,9 @@
     clojurians_app_http_port: 4242
     datomic_pro_version: 0.9.5561.56
     datomic_object_cache_max: 2g
-    datomic_transactor_max_heap: 2g
+    datomic_transactor_max_heap: 3584m
     clojure_app_env_vars: |
-      JVM_OPTS="-Dclojure.server.myrepl={:port,50505,:accept,clojure.core.server/repl} -Xmx3g -Xms1g -Ddatomic.ObjectCacheMax=2g -Ddatomic.memcachedServers=127.0.0.1:11211"
+      JVM_OPTS="-Dclojure.server.myrepl={:port,50505,:accept,clojure.core.server/repl} -Xmx3584m -Xms2g -Ddatomic.ObjectCacheMax=2g -Ddatomic.memcachedServers=127.0.0.1:11211"
 
   tasks:
 
