@@ -37,6 +37,21 @@
     group: "{{ clojure_app_user }}"
     mode: 0600
 
+- name: Clone the Clojurians log app
+  become: yes
+  become_user: "{{ clojure_app_user }}"
+  git:
+    repo: "https://github.com/clojureverse/clojurians-log-app.git"
+    dest: "/tmp/clojurians-log-tmp"
+
+- name: Push master to the bare repo
+  command: "git push {{ clojure_app_repo_dir }} master:master"
+  become: yes
+  become_user: "{{ clojure_app_user }}"
+  args:
+    chdir: "/tmp/clojurians-log-tmp"
+    creates: "{{ clojure_app_repo_dir }}/refs/heads/master"
+
 - name: Check out existing logs
   become: yes
   become_user: "{{ clojure_app_user }}"
