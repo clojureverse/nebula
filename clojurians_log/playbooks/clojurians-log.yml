@@ -24,14 +24,15 @@
     datomic_object_cache_max: 2g
     datomic_transactor_max_heap: 3584m
     clojure_app_env_vars: |
-      JVM_OPTS="-Dclojure.server.myrepl={:port,50505,:accept,clojure.core.server/repl} -Xmx3584m -Xms2g -Ddatomic.ObjectCacheMax=2g -Ddatomic.memcachedServers=127.0.0.1:11211 -Dcom.sun.management.jmxremote.port=17264 -Dcom.sun.management.jmxremote.rmi.port=17264"
+      JVM_OPTS="-Dclojure.server.myrepl={:port,50505,:accept,clojure.core.server/repl} -Xmx3584m -Xms2g -Ddatomic.ObjectCacheMax=2g -Ddatomic.memcachedServers=127.0.0.1:11211"
+    # -Dcom.sun.management.jmxremote.port=17264 -Dcom.sun.management.jmxremote.rmi.port=17264
 
   tasks:
     - name: Set up librato first so we have eyes
       import_role:
         name: librato.librato
       vars:
-        librato_enabled_plugins: ['nginx', 'jvm', 'memcached']
+        librato_enabled_plugins: ['nginx', 'memcached'] #jvm, postgresql
 
     # Keys first, then repos, then the dist-upgrade.
     - name: Add repository for ansible

@@ -8,8 +8,8 @@
 
 - name: Install gpg key
   apt_key:
-    url: http://packagecloud.io/gpg.key
-    id: 418A7F2FB0E1E6E7EABF6FE8C2E73424D59097AB
+    url: https://packagecloud.io/librato/librato-collectd/gpgkey
+    id: B83E13B25EA683E71C17FFA0BDBDCC081E77728D
     state: present
   when: ansible_os_family == 'Debian'
 
@@ -21,7 +21,9 @@
 
 - name: Create apt repo
   apt_repository:
-    repo: 'deb {{ librato_repo_url }}{{ librato_repo_base }}/{{ ansible_distribution|lower }}/ {{ ansible_distribution_release }} main'
+    # no packages (currently) for bionic, hard coding to use xenial instead
+    # repo: 'deb {{ librato_repo_url }}{{ librato_repo_base }}/{{ ansible_distribution|lower }}/ {{ ansible_distribution_release }} main'
+    repo: 'deb {{ librato_repo_url }}{{ librato_repo_base }}/{{ ansible_distribution|lower }}/ xenial main'
     state: present
   when: ansible_os_family == 'Debian'
 
