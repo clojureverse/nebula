@@ -178,10 +178,25 @@
         clojure_app_health_check_url: "http://localhost:{{clojurians_app_http_port}}/healthcheck"
         clojure_app_service_start_after: datomic.service
 
-    - name: Install the Clojurians Log app
+    - name: Create the repo for clojurians-log-app with push-to-deploy
       tags: clojurians-log
       import_role:
         name: plexus.clojurians-log
+
+    - name: Clone the Clojurians log app
+      tags: clojurians-log
+      git:
+        repo: "https://github.com/clojureverse/clojurians-log-app.git"
+        dest: "/root/clojurians-log-tmp"
+
+    - name: Push master to the bare repo
+      tags: clojurians-log
+      command: "git push {{ clojure_app_repo_dir }} master"
+      become: yes
+      become_user: "{{ clojure_app_user }}"
+      args:
+        chdir: "/root/clojurians-log-tmp"
+        creates: "{{ clojure_app_repo_dir }}/HEAD"
 
     - name: Prepare for ACME installs
       tags: setup-acme
