@@ -1,5 +1,5 @@
 resource "exoscale_security_group" "clojurians_log" {
-  name = "clojurians_log"
+  name = "${local.instance_name}"
   description = "Security Group for Clojurians Log"
 }
 

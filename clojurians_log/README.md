@@ -24,6 +24,8 @@ This is a work in progress and is subject to significant changes over time.
   - Run `export TF_VAR_exoscale_api_key="The Exoscale API key here"`
   - Run `export TF_VAR_exoscale_secret_key="The Exoscale secret key here"`
   - Run `export TF_VAR_exoscale_ssh_keypair_name="The Exoscale key pair name you created"`
+  - Run `export TF_VAR_cloudflare_email="Your cloudflare account"`
+  - Run `export TF_VAR_cloudlfare_api_key="Cloudflare 'global API key' (not to be confused with cloudflare tokens)"`
   - Run `bin/terraform_apply`
   - To destroy: `terraform destroy`
   - To ssh into the instance
