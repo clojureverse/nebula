@@ -65,4 +65,5 @@
 
 - name: Import logs
   command: "nc localhost {{ clojure_socket_repl_port }} < {{ clojure_app_app_dir }}/repl/production_import.clj > {{ clojure_app_app_dir }}/initial_import.txt"
-  creates: "{{ clojure_app_app_dir }}/initial_import.txt"
+  args:
+    creates: "{{ clojure_app_app_dir }}/initial_import.txt"
