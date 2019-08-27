@@ -15,7 +15,7 @@ This is a work in progress and is subject to significant changes over time.
   for this.
 - Create your own SSH keypair on the Console: [guide](https://community.exoscale.com/documentation/compute/ssh-keypairs/)
 - Install Terraform v0.11+.
-- Download the latest Exoscale terraform provider for your OS from [here](https://github.com/exoscale/terraform-provider-exoscale/releases).
+- Download the latest Exoscale terraform provider for your OS from [here](https://github.com/terraform-providers/terraform-provider-exoscale).
 - Decompress the archive and follow [the plugin installation](https://www.terraform.io/docs/configuration/providers.html#third-party-plugins).
 - Install [GPG](https://gnupg.org/download/)
 - Send your GPG public key ID to either of the maintainers to be added to the secrets file.
@@ -33,7 +33,7 @@ This is a work in progress and is subject to significant changes over time.
                     ... all the other maintainers \
       clojurians_log_secrets.yml
       ```
-      to produce a newly encrypted file and check it in. 
+      to produce a newly encrypted file and check it in.
   - Run:
     ```bash
     terraform init \
@@ -87,7 +87,7 @@ This is a work in progress and is subject to significant changes over time.
   You can log into it using `vagrant ssh`.
 - If you need to re-provision (for example, if you edit the Ansible scripts)
   you can use `vagrant provision`.
-- To shut down the VM, use `vagrant halt`. 
+- To shut down the VM, use `vagrant halt`.
 
 ## How to deploy the Clojurians-log app (with demo data)
 
