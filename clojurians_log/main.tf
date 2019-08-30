@@ -27,7 +27,7 @@ data "template_file" "userdata" {
     # git_clone_params = "--single-branch --branch exoscale-deploy"
     # The following can be used for production
     ansible_playbook_params = "--extra-vars \"ansible_python_interpreter=/usr/bin/python3\" --extra-vars \"clojurians_app_fqdn=${local.instance_name}.clojureverse.org\""
-    git_clone_params = "--single-branch --branch exoscale-deploy"
+    git_clone_params = ""
   }
 }
 
