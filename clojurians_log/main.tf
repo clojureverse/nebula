@@ -53,9 +53,17 @@ output "username" {
   value = exoscale_compute.clojurians_log.username
 }
 
-resource "cloudflare_record" "clojurians_log" {
+resource "cloudflare_record" "clojurians_log_internal" {
   domain = "clojureverse.org"
-  name   = "${local.instance_name}"
+  name   = "${local.instance_name}-internal"
   value  = "${exoscale_compute.clojurians_log.ip_address}"
   type   = "A"
+}
+
+resource "cloudflare_record" "clojurians_log" {
+  domain  = "clojureverse.org"
+  name    = "${local.instance_name}"
+  value   = "${exoscale_compute.clojurians_log.ip_address}"
+  type    = "A"
+  proxied = true
 }
