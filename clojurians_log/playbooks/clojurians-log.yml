@@ -183,7 +183,7 @@
           ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC1OMZKelrmjpvnsvNcME+tRCjCrY8e3whH/CPKoqgEla9ykc41w1yQ1rTI/YAKMh/ltzkSF0cqLZmBiGDnkf4qxVSIyUeLFfTXmUeSYFkqKfmglFs1778ObI5KeFjbV/T0P+7KJWpyFlNapdOVXc7p8+VflVmWMZnuqRQCBYEtsCwwfENoZdiX+lrOMGn0WOuFnbvGB7iqMBt8C7X/JKa1gRgUtjEG9VKUqDlqOeXzFedWTQH7Bo9NKtAJcyL/la+/PyjWyZli3RutWsfP2F0GZOeYcpPMF61y92fYIeBG6uIMgW/YFE+SdDfd1nsYyZYyA3p+AfVHAGt/Txchgix/
           ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGJ0uhdAiJ++6JJ8DdnlmY3km/AM0RZTi/vtKiPiae+B
         clojure_app_main_command: "/usr/local/bin/lein with-profile +production,-dev run {{ clojure_app_home_dir }}/config.edn"
-        clojure_app_health_check_url: "http://localhost:{{clojurians_app_http_port}}/healthcheck"
+        clojure_app_health_check_url: "http://localhost:{{clojurians_app_http_port}}/x/x/x/healthcheck"
         clojure_app_service_start_after: datomic.service
 
     - name: Install and configure the clojurians-log-app
