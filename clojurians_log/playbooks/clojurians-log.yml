@@ -22,10 +22,19 @@
     clojurians_app_http_port: 4242
     datomic_pro_version: 0.9.5561.56
     datomic_object_cache_max: 2g
+    datomic_transactor_max_heap: 3584m
+    clojure_socket_repl_port: 50505
     clojure_app_env_vars: |
-      JVM_OPTS="-Dclojure.server.myrepl={:port,50505,:accept,clojure.core.server/repl} -Xmx8g -Xms2g -Ddatomic.ObjectCacheMax=7g -Ddatomic.memcachedServers=127.0.0.1:11211"
+      JVM_OPTS="-Dclojure.server.myrepl={:port,{{ clojure_socket_repl_port }},:accept,clojure.core.server/repl} -Xmx3584m -Xms2g -Ddatomic.ObjectCacheMax=2g -Ddatomic.memcachedServers=127.0.0.1:11211"
+    # -Dcom.sun.management.jmxremote.port=17264 -Dcom.sun.management.jmxremote.rmi.port=17264
 
   tasks:
+    - name: Set up librato first so we have eyes
+      import_role:
+        name: librato.librato
+      vars:
+        librato_enabled_plugins: ['nginx', 'memcached'] #jvm, postgresql
+        librato_logging_use_syslog: true
 
     # Keys first, then repos, then the dist-upgrade.
     - name: Add repository for ansible
@@ -174,10 +183,10 @@
           ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC1OMZKelrmjpvnsvNcME+tRCjCrY8e3whH/CPKoqgEla9ykc41w1yQ1rTI/YAKMh/ltzkSF0cqLZmBiGDnkf4qxVSIyUeLFfTXmUeSYFkqKfmglFs1778ObI5KeFjbV/T0P+7KJWpyFlNapdOVXc7p8+VflVmWMZnuqRQCBYEtsCwwfENoZdiX+lrOMGn0WOuFnbvGB7iqMBt8C7X/JKa1gRgUtjEG9VKUqDlqOeXzFedWTQH7Bo9NKtAJcyL/la+/PyjWyZli3RutWsfP2F0GZOeYcpPMF61y92fYIeBG6uIMgW/YFE+SdDfd1nsYyZYyA3p+AfVHAGt/Txchgix/
           ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGJ0uhdAiJ++6JJ8DdnlmY3km/AM0RZTi/vtKiPiae+B
         clojure_app_main_command: "/usr/local/bin/lein with-profile +production,-dev run {{ clojure_app_home_dir }}/config.edn"
-        clojure_app_health_check_url: "http://localhost:{{clojurians_app_http_port}}/healthcheck"
+        clojure_app_health_check_url: "http://localhost:{{clojurians_app_http_port}}/x/x/x/healthcheck"
         clojure_app_service_start_after: datomic.service
 
-    - name: Install the Clojurians Log app
+    - name: Install and configure the clojurians-log-app
       tags: clojurians-log
       import_role:
         name: plexus.clojurians-log
@@ -237,6 +246,9 @@
             state: "present"
             nginx_access_log: off
             extra_parameters: |
+              location = /basic_status {
+                    stub_status;
+              }
               location / {
                   root {{ clojure_app_app_dir }}/resources/public;
                   try_files $uri @proxy_app;

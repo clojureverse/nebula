@@ -1,0 +1,32 @@
+#!/bin/bash
+
+set -e
+
+if [[ -z "${TF_VAR_exoscale_ssh_keypair_name}" ]]; then
+    echo "TF_VAR_exoscale_ssh_keypair_name not set, aborting."
+    exit 1
+fi
+
+if [[ -z "${TF_VAR_exoscale_api_key}" ]]; then
+    echo "TF_VAR_exoscale_api_key not set, aborting."
+    exit 1
+fi
+
+if [[ -z "${TF_VAR_exoscale_secret_key}" ]]; then
+    echo "TF_VAR_exoscale_secret_key not set, aborting."
+    exit 1
+fi
+
+# File does not exist, or encrypted version is newer: decrypt
+if [[ "playbooks/vars/clojurians_log_secrets.yml.gpg" -nt "playbooks/vars/clojurians_log_secrets.yml" ]]; then
+    gpg --decrypt playbooks/vars/clojurians_log_secrets.yml.gpg > playbooks/vars/clojurians_log_secrets.yml
+fi
+
+if [[ ! -d ".terraform" ]]; then
+    terraform init \
+              -backend-config="access_key=${TF_VAR_exoscale_api_key}" \
+              -backend-config="secret_key=${TF_VAR_exoscale_secret_key}"
+fi
+
+terraform plan -out plan
+terraform apply plan

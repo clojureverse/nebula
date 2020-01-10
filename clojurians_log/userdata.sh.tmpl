@@ -14,6 +14,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt install -y ansible
 
 cd ~
 
+# TODO: copy from the local filesystem, instead of going over github
 # Clone repo and switch to it
 git clone ${git_clone_params} https://github.com/clojureverse/nebula
 cd nebula/clojurians_log
@@ -33,5 +34,10 @@ base64 --decode < vars/clojurians_log_secrets.yml.b64 > vars/clojurians_log_secr
 # Bootstrap the instance
 ansible-playbook bootstrap.yml -i hosts >> ~/ansible.log
 
+# Create a script for ansible, so it's easy to re-run at a later date
+echo '#/bin/sh' >> ~/run_ansible
+echo 'HOME=/root ansible-playbook clojurians-log.yml -i /root/nebula/clojurians_log/playbooks/hosts ${ansible_playbook_params} "$@"' >> ~/run_ansible
+chmod +x ~/run_ansible
+
 # Setup clojurians_log
-HOME=/root ansible-playbook clojurians-log.yml -i hosts ${ansible_playbook_params} >> ~/ansible.log
+~/run_ansible >> ~/ansible.log

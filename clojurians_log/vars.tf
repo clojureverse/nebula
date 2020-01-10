@@ -15,3 +15,15 @@ variable "exoscale_ssh_keypair_name" {
   type = string
   description = "The SSH keypair to be allowed on the instance"
 }
+
+variable "cloudflare_email" {
+  default = "<read from env>"
+  type = string
+  description = "The email to authenticate with Cloudflare"
+}
+
+variable "cloudflare_api_key" {
+  default = "<read from env>"
+  type = string
+  description = "The email to authenticate with Cloudflare"
+}
