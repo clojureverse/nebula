@@ -41,7 +41,7 @@
   become: yes
   become_user: "{{ clojure_app_user }}"
   git:
-    repo: "https://github.com/clojureverse/slack-archiver-app.git"
+    repo: "https://github.com/clojureverse/clojurians-log-app.git"
     dest: "/tmp/slack-archiver-tmp"
 
 - name: Push master to the bare repo

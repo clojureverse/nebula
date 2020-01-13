@@ -17,24 +17,25 @@
     database_hostname: "localhost"
     database_port: 5432
     cert_dir: "/etc/ssl/ansible"
-    slack_archiver_app_fqdn: "slack-archiver.clojureverse.org"
-    slack_archiver_app_challenge_fqdn: "{{ slack_archiver_app_fqdn | regex_search('(^[^\\.]+)') }}.acmechallenges.clojureverse.org"
+    slack_archiver_app_fqdn: "slack-archiver.clojureverse.org" # TODO: set right domain
+    slack_archiver_app_challenge_fqdn: "{{ slack_archiver_app_fqdn | regex_search('(^[^\\.]+)') }}.acmechallenges.clojureverse.org" # TODO correct domain
     slack_archiver_app_http_port: 4242
     datomic_pro_version: 0.9.5561.56
-    datomic_object_cache_max: 2g
-    datomic_transactor_max_heap: 3584m
+    datomic_object_cache_max: 2g         # TODO tweak memory requirements to fit in 4G
+    datomic_transactor_max_heap: 3584m   # TODO tweak memory requirements to fit in 4G
     clojure_socket_repl_port: 50505
+    # TODO tweak memory requirements to fit in 4G
     clojure_app_env_vars: |
       JVM_OPTS="-Dclojure.server.myrepl={:port,{{ clojure_socket_repl_port }},:accept,clojure.core.server/repl} -Xmx3584m -Xms2g -Ddatomic.ObjectCacheMax=2g -Ddatomic.memcachedServers=127.0.0.1:11211"
     # -Dcom.sun.management.jmxremote.port=17264 -Dcom.sun.management.jmxremote.rmi.port=17264
 
   tasks:
-    - name: Set up librato first so we have eyes
-      import_role:
-        name: librato.librato
-      vars:
-        librato_enabled_plugins: ['nginx', 'memcached'] #jvm, postgresql
-        librato_logging_use_syslog: true
+    # - name: Set up librato first so we have eyes
+    #   import_role:
+    #     name: librato.librato
+    #   vars:
+    #     librato_enabled_plugins: ['nginx', 'memcached'] #jvm, postgresql
+    #     librato_logging_use_syslog: true
 
     # Keys first, then repos, then the dist-upgrade.
     - name: Add repository for ansible
@@ -86,6 +87,7 @@
       register: chkjava
       changed_when: false
       check_mode: false
+
     - name: Choose jdk8 as default for Clojure
       command: update-java-alternatives --set java-1.8.0-openjdk-amd64
       when: chkjava.stdout.find('link currently points to /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java') == -1
@@ -102,44 +104,19 @@
 
     #########
     # Now set up the users
-    - name: Set up plexus
-      import_role:
-        name: setup_user
-      tags: setup-user
-      vars:
-        username: "plexus"
-        full_name: "Arne Brasseur"
-        github_username: "plexus"
-    - name: Set up lispyclouds
-      import_role:
-        name: setup_user
-      tags: setup-user
-      vars:
-        username: "lispyclouds"
-        full_name: "Rahul De"
-        github_username: "lispyclouds"
-    - name: Set up victorb
-      import_role:
-        name: setup_user
-      tags: setup-user
-      vars:
-        username: "victorb"
-        full_name: "Victor Bjelkholm"
-        github_username: "victorb"
-    - name: Set up dorab
-      import_role:
-        name: setup_user
-      tags: setup-user
-      vars:
-        username: "dorab"
-        full_name: "Dorab Patel"
-        github_username: "bombaywalla"
-    # TODO: might want to remove some users such as vagrant or ubuntu??
+    # - name: Set up plexus
+    #   import_role:
+    #     name: setup_user
+    #   tags: setup-user
+    #   vars:
+    #     username: "plexus"
+    #     full_name: "Arne Brasseur"
+    #     github_username: "plexus"
 
-    # Harden sshd. Note: This MUST come after at least one sudoable user having a pubkey login.
-    - name: Harden sshd
-      import_role:
-        name: harden_sshd
+    # # Harden sshd. Note: This MUST come after at least one sudoable user having a pubkey login.
+    # - name: Harden sshd
+    #   import_role:
+    #     name: harden_sshd
 
     # Now install the programs
     - name: Install memcached
@@ -149,18 +126,18 @@
       vars:
         memcached_memory_limit: 4096
 
-    - name: Install postgres
-      import_role:
-        name: geerlingguy.postgresql
-      tags: postgres
-      vars:
-        postgresql_databases:
-          - name: "{{ database_name }}"
-        postgresql_users:
-          - name: "{{ database_user }}"
-            password: "{{ database_password }}"
-            db: "{{ database_name }}"
-            priv: "ALL"
+    # - name: Install postgres
+    #   import_role:
+    #     name: geerlingguy.postgresql
+    #   tags: postgres
+    #   vars:
+    #     postgresql_databases:
+    #       - name: "{{ database_name }}"
+    #     postgresql_users:
+    #       - name: "{{ database_user }}"
+    #         password: "{{ database_password }}"
+    #         db: "{{ database_name }}"
+    #         priv: "ALL"
 
     - name: Install datomic-pro
       import_role:
@@ -175,13 +152,7 @@
         name: plexus.clojure-web-app
       tags: clojure-web-app
       vars:
-        clojure_app_authorized_keys: |
-          ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCf99gah0qnmLQn3yix8NFk2JsV0kHTzciLLHVUFfJmCsb4sHY4yKAuiMfp9E0s71tIsmVfw9GdNfhit/nHqQG/VGjgYSR4zIRD0Rr0V5GrDsSS/jWotNfb0JXt+Up310BE/diL7vi8uTwe3t5THymiuibFLgoaHvnbFE1VYojpyiGcSOGmE9GrDOuN08mg2ynb6FAK2/tnfo+ZBwl7g3A9pMvjHUwRzFyq+Z+Mdmf8c8x4qLrikUNv/U3TL1WPXUB4rwiUwhnRqadR/uBGYUwWJ1vfh4wl1aZqnyVRM3YfDmb5720m2IXX1MPH0CDio8moT9bwIfSRyBUt3zDuft/R arne@twoflower
-          ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCz8V7FdhmQ6GSwc8tC3+VyIa1MrUX8FYnwJs7Lg4hddnJAPWe2N+J5N2gSCfRIBFAco0K9juBxX28Em5kK8Jzq8d0DaNyQ4jw3NkkIWFEoYcFto6wUu+9fmj74GrMYwFqkrHukB1biwjMwAsrRbb6kKISqbZJq1D+bkZYIFk48/jjL0iMF00R4aViqTrUr/l6wbae74+bEOlZPJiFItvJfD5RBHdfkrM+nviDWva6YUceHzg4XA9G2Ot7kV/WHsDlHyohMBnxrNucBqvusolpp4aSQ8sDevl3euwx8WXnYp+QQNYkkhwcwfyqMWPSQ4H2BhQfWvUb6779mpyRezPFIja/ulcekLwWWQ+Btc8+96p7fSwRt9WNHBCVy9hrw8AWy5B59nDIX426xjHV6zyul4uN1DwaMmh9N3TUFbk9zu6aVWkgW0RdrAyadPNtcbJYzjxbnWVac5nao7SnJKMLVE3fLwpVUDGsGQsKYiej6QhEqoNIyrsv/EoX/I0h+TInGRSVswhQjrp+ccYSYtgmRdqmtPTQGqvYiMW2873cL4DLK31lDeLXBqq+FYmoV3F/QcY8YK68try4N3pJPsWw88RsSVPO7Ok3fmpGuahdje/0G9bGI0BGHc79G278ztBIrQ20Wzjq6xGOhicENcVNivMmc1vhHWuGc65S6dSclMw==
-          ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDMOBeiZnugxLNgt4sJZPMVzrW3sMpkB2PFv9V4ESW5FZEJPsV0Q09XAfFQL8RxWB0UFMZk43lqImfXoxpLrMyAOa2/sco/2r0uEGtLscYAg6HwCuaXnZeuMwByYIrUSfmZPd7mGo1GYqP5gVfuaKkAVnIplXK5khQL4Ix+aJADDmUdWrBWVeP4KlqfDWM7DCcc8nF9+8C8Wu6uE5a8Zn2c25laML472F3havXysj8lp+VRz2KOSSpVYLOifYajbQH2GaxuynLOny6+vOIVO1LQf5Do+RgWT70sWUdb9S+kjwqlijFUTTvzXuA5cSHReS8h9wtcSRra4qlWpcGr0O0BET1o7CWJXbmmBhtsj+yjR0rR5Xt5/tqEVrHCImdL+ggDmn4wQbRDCRTO6EcnZNiPgdRuve73gguzAFKCINMId3L/ttqOnjn8Bjis046ypKwvSvkan75tJ3/ZpMYSCop51ULdPG8UvdJjH6x75e94S8iH7UYU5c1gFXE+ciukkyyje2ldoaD3zZLUFAWc7XZSZ6iQCvEQCZx32suqgbBzQ4jgoLuxBY7Lpe2sedYGbixBGALgd7jbzG+3NwQeNFOcifbJ/ncPdtpIuYYsKzWtxcJSeOiWqzZWaSkHIqP4TGOgd9GNgedmg/AeeubgDqkN+wI5wy/DynZb0jdtzOZfSQ==
-          ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC/R/GBWvIuX1pU7afNEdvkTryI9IdYSQWLqtxjyeOK1ygTXQcUpEKo3HLuUJXF9zdv1OtLI/UgEwp/GpfcUkzJsPmYwaSi4QqZjh8RyPkZpyWgydqdkQ7HR5MGJqeX867IEocamwh34qYLeYiS+hopphFdHJ6oiwVZVYbh/L/CJPPfE38yIBYK+F7hIi5exkNFRMHQhip9RYanhttv1xpnJPb0QC8s3BvIg+386PwHLLtzPpJaGbePQukCOz5NCVjuazn3x3ZaXBl5sx1ys1JDBmhGThLXtetQPjoHmSf96BqxuEwUH5pPhXQnmcCPTmfzF44/h0YPnzLtjauGkETy4SUOWvfFC0tZyfd8BkJxTREklm6L92TUoiV0TuYo5K0BU2Rip9gBXZsB/sH5MoS+r1h2xHA7/j0GsfEWlDO2w4lxhkU0mWZz0g7TrRU24apUgimxgN6Wv6bQqrC0m/WiPNvgGbE8nprcuHTry4JQbjvEoYXcwvIplEEtgR1TfCzY9gMFuPj0lEepUYa9RKlbfIwOHoanteeyT2EUxjJFqTLay5r1Lw5ez/T5hU+Sr7//uUEwDqnSPLPFqh/OgzN5h8FAdHnhkBPDbgUJ8cWgOqnnLrPDVPUFw83wz4khtNGs3VySKUeszeZoPoiDWX878ufOpMGpIYItDCbDXpFmVQ==
-          ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC1OMZKelrmjpvnsvNcME+tRCjCrY8e3whH/CPKoqgEla9ykc41w1yQ1rTI/YAKMh/ltzkSF0cqLZmBiGDnkf4qxVSIyUeLFfTXmUeSYFkqKfmglFs1778ObI5KeFjbV/T0P+7KJWpyFlNapdOVXc7p8+VflVmWMZnuqRQCBYEtsCwwfENoZdiX+lrOMGn0WOuFnbvGB7iqMBt8C7X/JKa1gRgUtjEG9VKUqDlqOeXzFedWTQH7Bo9NKtAJcyL/la+/PyjWyZli3RutWsfP2F0GZOeYcpPMF61y92fYIeBG6uIMgW/YFE+SdDfd1nsYyZYyA3p+AfVHAGt/Txchgix/
-          ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGJ0uhdAiJ++6JJ8DdnlmY3km/AM0RZTi/vtKiPiae+B
+        clojure_app_authorized_keys: "" # TODO: these are the keys that can push new versions of the app
         clojure_app_main_command: "/usr/local/bin/lein with-profile +production,-dev run {{ clojure_app_home_dir }}/config.edn"
         clojure_app_health_check_url: "http://localhost:{{slack_archiver_app_http_port}}/x/x/x/healthcheck"
         clojure_app_service_start_after: datomic.service
@@ -191,117 +162,121 @@
       import_role:
         name: plexus.slack-archiver
 
-    - name: Prepare for ACME installs
-      tags: setup-acme
-      import_role:
-        name: setup_acme
+    # TODO: re-enable the Let's encrypt / ACME stuff when we have DNS sorted
 
-    - name: Ensure gcloud is installed for use in ACME DNS-01 challenge.
-      tags: gcloud
-      import_role:
-        name: setup_gcloud
+    # - name: Prepare for ACME installs
+    #   tags: setup-acme
+    #   import_role:
+    #     name: setup_acme
 
-    - name: Generate and install a LetsEncrypt SSL Cert.
-      tags: acme
-      import_role:
-        name: nickjj.acme_sh
-      vars:
-        acme_sh_git_update: False
-        acme_sh_git_clone_dest: "/usr/local/src/acme.sh"
-        acme_sh_upgrade: False
-        acme_sh_account_email: "arne@arnebrasseur.net"
-        acme_sh_copy_certs_to_path: "{{ cert_dir }}"
-        acme_sh_list_domains: True
-        acme_sh_default_staging: False
-        acme_sh_default_force_issue: False # Set to True initially, once
-        acme_sh_default_dns_provider: "dns_gcloud"
-        acme_sh_default_dns_provider_api_keys: { "FOO": "BAR" } # Cannot be empty
-        acme_sh_domains:
-          - domains: ["{{ slack_archiver_app_fqdn }}"]
-            extra_flags_issue: "--challenge-alias {{ slack_archiver_app_challenge_fqdn }}"
-            extra_flags_renew: "--challenge-alias {{ slack_archiver_app_challenge_fqdn }}"
+    # - name: Ensure gcloud is installed for use in ACME DNS-01 challenge.
+    #   tags: gcloud
+    #   import_role:
+    #     name: setup_gcloud
+
+    # - name: Generate and install a LetsEncrypt SSL Cert.
+    #   tags: acme
+    #   import_role:
+    #     name: nickjj.acme_sh
+    #   vars:
+    #     acme_sh_git_update: False
+    #     acme_sh_git_clone_dest: "/usr/local/src/acme.sh"
+    #     acme_sh_upgrade: False
+    #     acme_sh_account_email: "arne@arnebrasseur.net"
+    #     acme_sh_copy_certs_to_path: "{{ cert_dir }}"
+    #     acme_sh_list_domains: True
+    #     acme_sh_default_staging: False
+    #     acme_sh_default_force_issue: False # Set to True initially, once
+    #     acme_sh_default_dns_provider: "dns_gcloud"
+    #     acme_sh_default_dns_provider_api_keys: { "FOO": "BAR" } # Cannot be empty
+    #     acme_sh_domains:
+    #       - domains: ["{{ slack_archiver_app_fqdn }}"]
+    #         extra_flags_issue: "--challenge-alias {{ slack_archiver_app_challenge_fqdn }}"
+    #         extra_flags_renew: "--challenge-alias {{ slack_archiver_app_challenge_fqdn }}"
 
     # NGINX
+    # TODO: enable nginx again when we know dns/ssl situation
+
     # TODO: See also https://michael.lustfield.net/nginx/getting-a-perfect-ssl-labs-score
     # TODO: See also https://gist.github.com/nrollr/9a39bb636a820fb97eec2ed85e473d38
-    - name: Install and configure nginx for SSL
-      tags: nginx
-      import_role:
-        name: geerlingguy.nginx
-      vars:
-        nginx_remove_default_vhost: true
-        nginx_proxy_cache_path: "/var/cache/nginx levels=1:2 keys_zone=my_cache:10m max_size=20g inactive=365d use_temp_path=off"
-        nginx_extra_http_options: |
-          proxy_buffering    off;
-          proxy_set_header   X-Real-IP $remote_addr;
-          proxy_set_header   X-Scheme $scheme;
-          proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
-          proxy_set_header   Host $http_host;
-        nginx_vhosts:
-          - listen: 80
-            server_name: "localhost {{ slack_archiver_app_fqdn }}"
-            state: "present"
-            return: "301 https://{{ slack_archiver_app_fqdn }}$request_uri"
-          - listen: "443 ssl http2"
-            server_name: "localhostssl {{ slack_archiver_app_fqdn }}"
-            state: "present"
-            nginx_access_log: off
-            extra_parameters: |
-              location = /basic_status {
-                    stub_status;
-              }
-              location / {
-                  root {{ clojure_app_app_dir }}/resources/public;
-                  try_files $uri @proxy_app;
-                  expires max;
-                  if ($request_filename ~ "^.*/([^/]+\.(zip|tgz|iso|gz|vcf))$"){
-                    set $fname $1;
-                    add_header Content-Disposition 'attachment; filename="$fname"';
-                  }
+    # - name: Install and configure nginx for SSL
+    #   tags: nginx
+    #   import_role:
+    #     name: geerlingguy.nginx
+    #   vars:
+    #     nginx_remove_default_vhost: true
+    #     nginx_proxy_cache_path: "/var/cache/nginx levels=1:2 keys_zone=my_cache:10m max_size=20g inactive=365d use_temp_path=off"
+    #     nginx_extra_http_options: |
+    #       proxy_buffering    off;
+    #       proxy_set_header   X-Real-IP $remote_addr;
+    #       proxy_set_header   X-Scheme $scheme;
+    #       proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+    #       proxy_set_header   Host $http_host;
+    #     nginx_vhosts:
+    #       - listen: 80
+    #         server_name: "localhost {{ slack_archiver_app_fqdn }}"
+    #         state: "present"
+    #         return: "301 https://{{ slack_archiver_app_fqdn }}$request_uri"
+    #       - listen: "443 ssl http2"
+    #         server_name: "localhostssl {{ slack_archiver_app_fqdn }}"
+    #         state: "present"
+    #         nginx_access_log: off
+    #         extra_parameters: |
+    #           location = /basic_status {
+    #                 stub_status;
+    #           }
+    #           location / {
+    #               root {{ clojure_app_app_dir }}/resources/public;
+    #               try_files $uri @proxy_app;
+    #               expires max;
+    #               if ($request_filename ~ "^.*/([^/]+\.(zip|tgz|iso|gz|vcf))$"){
+    #                 set $fname $1;
+    #                 add_header Content-Disposition 'attachment; filename="$fname"';
+    #               }
 
-              }
-              ssl_certificate             {{ cert_dir }}/{{ slack_archiver_app_fqdn }}.pem;
-              ssl_certificate_key         {{ cert_dir }}/{{ slack_archiver_app_fqdn }}.key;
-              ssl on;
-              # enable session resumption to improve https performance
-              # http://vincent.bernat.im/en/blog/2011-ssl-session-reuse-rfc5077.html
-              ssl_session_cache shared:SSL:50m;
-              ssl_session_timeout 5m;
-              # enables server-side protection from BEAST attacks
-              # http://blog.ivanristic.com/2013/09/is-beast-still-a-threat.html
-              ssl_prefer_server_ciphers on;
-              # disable SSLv3 (enabled by default since nginx 0.8.19) since it's less secure than TLS
-              # http://en.wikipedia.org/wiki/Secure_Sockets_Layer#SSL_3.0
-              ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-              # ciphers chosen for forward secrecy and compatibility
-              # http://blog.ivanristic.com/2013/08/configuring-apache-nginx-and-openssl-for-forward-secrecy.html
-              ssl_ciphers "ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4";
-              # enable ocsp stapling (mechanism by which a site can convey certificate revocation information
-              # to visitors in a privacy-preserving, scalable manner)
-              # http://blog.mozilla.org/security/2013/07/29/ocsp-stapling-in-firefox/
-              resolver 8.8.8.8;
-              ssl_stapling on;
-              # ssl_session_cache builtin:1000  shared:SSL:10m;
-              ssl_dhparam {{ cert_dir }}/dhparam.pem;
-              add_header Strict-Transport-Security 'max-age=31536000';
-              location @proxy_app {
-                  proxy_cache my_cache;
-                  proxy_cache_revalidate on;
-                  proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;
-                  proxy_cache_background_update on;
-                  proxy_cache_lock on;
-                  proxy_cache_valid 200 365d;
-                  proxy_buffering on;
-                  add_header X-Cache-Status $upstream_cache_status;
+    #           }
+    #           ssl_certificate             {{ cert_dir }}/{{ slack_archiver_app_fqdn }}.pem;
+    #           ssl_certificate_key         {{ cert_dir }}/{{ slack_archiver_app_fqdn }}.key;
+    #           ssl on;
+    #           # enable session resumption to improve https performance
+    #           # http://vincent.bernat.im/en/blog/2011-ssl-session-reuse-rfc5077.html
+    #           ssl_session_cache shared:SSL:50m;
+    #           ssl_session_timeout 5m;
+    #           # enables server-side protection from BEAST attacks
+    #           # http://blog.ivanristic.com/2013/09/is-beast-still-a-threat.html
+    #           ssl_prefer_server_ciphers on;
+    #           # disable SSLv3 (enabled by default since nginx 0.8.19) since it's less secure than TLS
+    #           # http://en.wikipedia.org/wiki/Secure_Sockets_Layer#SSL_3.0
+    #           ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    #           # ciphers chosen for forward secrecy and compatibility
+    #           # http://blog.ivanristic.com/2013/08/configuring-apache-nginx-and-openssl-for-forward-secrecy.html
+    #           ssl_ciphers "ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES128-SHA256:DHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES256-SHA:AES128-SHA:DES-CBC3-SHA:HIGH:!aNULL:!eNULL:!EXPORT:!DES:!MD5:!PSK:!RC4";
+    #           # enable ocsp stapling (mechanism by which a site can convey certificate revocation information
+    #           # to visitors in a privacy-preserving, scalable manner)
+    #           # http://blog.mozilla.org/security/2013/07/29/ocsp-stapling-in-firefox/
+    #           resolver 8.8.8.8;
+    #           ssl_stapling on;
+    #           # ssl_session_cache builtin:1000  shared:SSL:10m;
+    #           ssl_dhparam {{ cert_dir }}/dhparam.pem;
+    #           add_header Strict-Transport-Security 'max-age=31536000';
+    #           location @proxy_app {
+    #               proxy_cache my_cache;
+    #               proxy_cache_revalidate on;
+    #               proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;
+    #               proxy_cache_background_update on;
+    #               proxy_cache_lock on;
+    #               proxy_cache_valid 200 365d;
+    #               proxy_buffering on;
+    #               add_header X-Cache-Status $upstream_cache_status;
 
-                  proxy_pass http://localhost:{{ slack_archiver_app_http_port }};
-                  proxy_read_timeout 90;
-                  proxy_redirect http://localhost:{{ slack_archiver_app_http_port }} https://{{ slack_archiver_app_fqdn }};
-                  proxy_set_header Host $host;
-                  proxy_set_header X-Real-IP $remote_addr;
-                  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                  proxy_set_header X-Forwarded-Proto $scheme;
-              }
+    #               proxy_pass http://localhost:{{ slack_archiver_app_http_port }};
+    #               proxy_read_timeout 90;
+    #               proxy_redirect http://localhost:{{ slack_archiver_app_http_port }} https://{{ slack_archiver_app_fqdn }};
+    #               proxy_set_header Host $host;
+    #               proxy_set_header X-Real-IP $remote_addr;
+    #               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    #               proxy_set_header X-Forwarded-Proto $scheme;
+    #           }
 
     - name: Setup and config rtmbot
       tags: rtmbot

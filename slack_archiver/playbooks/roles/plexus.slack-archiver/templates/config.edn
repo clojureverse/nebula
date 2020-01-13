@@ -1,4 +1,4 @@
-{:datomic {:uri "datomic:sql://{{ clojure_app_name }}?jdbc:postgresql://localhost:5432/{{ database_name }}?user={{ database_user }}&password={{ database_password }}"}
+{:datomic {:uri "datomic:sql://{{ clojure_app_name }}?jdbc:{{ datomic_jdbc_type }}://localhost:5432/{{ database_name }}?user={{ database_user }}&password={{ database_password }}"}
  :http {:port {{ slack_archiver_app_http_port }}
         :origin "https://{{ slack_archiver_app_fqdn }}"}
  :slack {:api-token "{{ slack_api_token }}"

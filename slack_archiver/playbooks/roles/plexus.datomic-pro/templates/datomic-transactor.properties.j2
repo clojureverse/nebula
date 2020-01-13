@@ -12,7 +12,7 @@ license-key={{ datomic_license_key }}
 ################################################################
 # See http://docs.datomic.com/storage.html
 
-sql-url=jdbc:postgresql://{{ database_hostname }}:{{ database_port }}/{{ database_name }}
+sql-url=jdbc:{{ datomic_jdbc_type }}://{{ database_hostname }}:{{ database_port }}/{{ database_name }}
 sql-user={{ database_user }}
 sql-password={{ database_password }}
 
@@ -20,7 +20,7 @@ sql-password={{ database_password }}
 # databases, you will need to install the driver on the
 # transactor classpath, by copying the file into lib/,
 # and place the driver on your peer's classpath.
-sql-driver-class=org.postgresql.Driver
+sql-driver-class={{ datomic_jdbc_driver }}
 
 # Driver specified params, as semicolon-separated pairs.
 # Optional

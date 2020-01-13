@@ -1,4 +1,4 @@
 ---
-real_logs_repo_url : "git@github.com:plexus/slack-archiver.git"
-demo_logs_repo_url : "git@github.com:clojureverse/slack-archiver-demo-data.git"
+real_logs_repo_url : "git@github.com:plexus/clojurians-log.git"   # TODO set this for IT revolution
+demo_logs_repo_url : ""
 use_demo_logs : false
