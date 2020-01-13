@@ -154,8 +154,8 @@
       import_role:
         name: plexus.rtmbot
       vars:
-        rtmbot_user: {{ clojure_app_user }}
-        rtmbot_group: {{ clojure_app_user }}
+        rtmbot_user: "{{ clojure_app_user }}"
+        rtmbot_group: "{{ clojure_app_user }}"
 
     - name: Install and configure the slack-archiver-app
       tags: slack-archiver
