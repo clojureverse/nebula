@@ -17,7 +17,7 @@ cd ~
 # TODO: copy from the local filesystem, instead of going over github
 # Clone repo and switch to it
 git clone ${git_clone_params} https://github.com/clojureverse/nebula
-cd nebula/clojurians_log
+cd nebula/slack_archiver
 
 # Start provisioning
 cd playbooks
@@ -25,20 +25,20 @@ cd playbooks
 # Barf the secrets file
 # The base64 stuff is to prevent terraform from munging the file (for example backslash escapes)
 # since terraform treats the contents of this template file as a string (and so re-escapes the backslashes).
-cat > vars/clojurians_log_secrets.yml.b64 << YAML
-${filebase64("playbooks/vars/clojurians_log_secrets.yml")}
+cat > vars/slack_archiver_secrets.yml.b64 << YAML
+${filebase64("playbooks/vars/slack_archiver_secrets.yml")}
 YAML
 
-base64 --decode < vars/clojurians_log_secrets.yml.b64 > vars/clojurians_log_secrets.yml
+base64 --decode < vars/slack_archiver_secrets.yml.b64 > vars/slack_archiver_secrets.yml
 
 # Bootstrap the instance
 ansible-playbook bootstrap.yml -i hosts >> ~/ansible.log
 
 # Create a script for ansible, so it's easy to re-run at a later date
 echo '#/bin/sh' >> ~/run_ansible
-echo 'cd /root/nebula/clojurians_log/playbooks' >> ~/run_ansible
-echo 'HOME=/root ansible-playbook clojurians-log.yml -i /root/nebula/clojurians_log/playbooks/hosts ${ansible_playbook_params} "$@"' >> ~/run_ansible
+echo 'cd /root/nebula/slack_archiver/playbooks' >> ~/run_ansible
+echo 'HOME=/root ansible-playbook clojurians-log.yml -i /root/nebula/slack_archiver/playbooks/hosts ${ansible_playbook_params} "$@"' >> ~/run_ansible
 chmod +x ~/run_ansible
 
-# Setup clojurians_log
+# Setup slack_archiver
 ~/run_ansible >> ~/ansible.log

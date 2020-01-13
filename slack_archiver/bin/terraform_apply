@@ -18,8 +18,8 @@ if [[ -z "${TF_VAR_exoscale_secret_key}" ]]; then
 fi
 
 # File does not exist, or encrypted version is newer: decrypt
-if [[ "playbooks/vars/clojurians_log_secrets.yml.gpg" -nt "playbooks/vars/clojurians_log_secrets.yml" ]]; then
-    gpg --decrypt playbooks/vars/clojurians_log_secrets.yml.gpg > playbooks/vars/clojurians_log_secrets.yml
+if [[ "playbooks/vars/slack_archiver_secrets.yml.gpg" -nt "playbooks/vars/slack_archiver_secrets.yml" ]]; then
+    gpg --decrypt playbooks/vars/slack_archiver_secrets.yml.gpg > playbooks/vars/slack_archiver_secrets.yml
 fi
 
 if [[ ! -d ".terraform" ]]; then

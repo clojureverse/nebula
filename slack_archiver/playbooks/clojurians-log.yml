@@ -7,13 +7,13 @@
     DEBIAN_FRONTEND: "noninteractive"
 
   vars_files:
-    - vars/clojurians_log_secrets.yml
+    - vars/slack_archiver_secrets.yml
 
   become: true
 
   vars:
-    database_name: "clojurians_log_datomic"
-    database_user: "clojurians_log"
+    database_name: "slack_archiver_datomic"
+    database_user: "slack_archiver"
     database_hostname: "localhost"
     database_port: 5432
     cert_dir: "/etc/ssl/ansible"

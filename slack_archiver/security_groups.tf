@@ -1,10 +1,10 @@
-resource "exoscale_security_group" "clojurians_log" {
+resource "exoscale_security_group" "slack_archiver" {
   name = "${local.instance_name}"
   description = "Security Group for Clojurians Log"
 }
 
-resource "exoscale_security_group_rules" "clojurians_log" {
-  security_group_id = "${exoscale_security_group.clojurians_log.id}"
+resource "exoscale_security_group_rules" "slack_archiver" {
+  security_group_id = "${exoscale_security_group.slack_archiver.id}"
 
   ingress {
     description = "Ping"

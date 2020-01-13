@@ -20,7 +20,7 @@ This is a work in progress and is subject to significant changes over time.
 - Install [GPG](https://gnupg.org/download/)
 - Send your GPG public key ID to either of the maintainers to be added to the secrets file.
 - Clone this repo.
-- In the clojurians_log dir:
+- In the slack_archiver dir:
   - Run `export TF_VAR_exoscale_api_key="The Exoscale API key here"`
   - Run `export TF_VAR_exoscale_secret_key="The Exoscale secret key here"`
   - Run `export TF_VAR_exoscale_ssh_keypair_name="The Exoscale key pair name you created"`
@@ -35,13 +35,13 @@ This is a work in progress and is subject to significant changes over time.
 
 The `terraform_apply script does the following`
   - In the `playbooks/vars` dir:
-    - Run `gpg --decrypt clojurians_log_secrets.yml.gpg > clojurians_log_secrets.yml`
+    - Run `gpg --decrypt slack_archiver_secrets.yml.gpg > slack_archiver_secrets.yml`
     - If you need to update the secret file later on you'll have to do this:
       ```bash
       gpg --encrypt --recipient your_email \
                     --recipient others_emails \
                     ... all the other maintainers \
-      clojurians_log_secrets.yml
+      slack_archiver_secrets.yml
       ```
       to produce a newly encrypted file and check it in.
   - Run:

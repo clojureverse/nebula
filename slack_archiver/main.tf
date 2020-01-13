@@ -31,7 +31,7 @@ data "template_file" "userdata" {
   }
 }
 
-resource "exoscale_compute" "clojurians_log" {
+resource "exoscale_compute" "slack_archiver" {
   display_name = "${local.instance_name}"
   template = "Linux Ubuntu 18.04 LTS 64-bit"
   zone = "ch-gva-2"
@@ -41,29 +41,29 @@ resource "exoscale_compute" "clojurians_log" {
   user_data = "${data.template_file.userdata.rendered}"
 
   security_groups = [
-    "${exoscale_security_group.clojurians_log.name}",
+    "${exoscale_security_group.slack_archiver.name}",
   ]
 }
 
 output "ip_address" {
-  value = exoscale_compute.clojurians_log.ip_address
+  value = exoscale_compute.slack_archiver.ip_address
 }
 
 output "username" {
-  value = exoscale_compute.clojurians_log.username
+  value = exoscale_compute.slack_archiver.username
 }
 
-resource "cloudflare_record" "clojurians_log_internal" {
+resource "cloudflare_record" "slack_archiver_internal" {
   domain = "clojureverse.org"
   name   = "${local.instance_name}-internal"
-  value  = "${exoscale_compute.clojurians_log.ip_address}"
+  value  = "${exoscale_compute.slack_archiver.ip_address}"
   type   = "A"
 }
 
-resource "cloudflare_record" "clojurians_log" {
+resource "cloudflare_record" "slack_archiver" {
   domain  = "clojureverse.org"
   name    = "${local.instance_name}"
-  value   = "${exoscale_compute.clojurians_log.ip_address}"
+  value   = "${exoscale_compute.slack_archiver.ip_address}"
   type    = "A"
   proxied = true
 }

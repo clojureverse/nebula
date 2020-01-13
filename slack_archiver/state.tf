@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket = "clojurians-log"
-    key = "tfstates/clojurians_log.tfstate"
+    key = "tfstates/slack_archiver.tfstate"
     # Dummy for S3 compat.
     region = "de-fra-1"
     endpoint = "https://sos-de-fra-1.exo.io"
