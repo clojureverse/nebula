@@ -7,15 +7,15 @@
     DEBIAN_FRONTEND: "noninteractive"
 
   vars_files:
-    - vars/slack_archiver_secrets.yml
+    - vars/itrev.secrets.yml
 
   become: true
 
   vars:
-    database_name: "slack_archiver_datomic"
-    database_user: "slack_archiver"
-    database_hostname: "localhost"
-    database_port: 5432
+    # database_name: "slack_archiver_datomic"
+    # database_user: "slack_archiver"
+    # database_hostname: "localhost"
+    # database_port: 5432
     cert_dir: "/etc/ssl/ansible"
     slack_archiver_app_fqdn: "slack-archiver.clojureverse.org" # TODO: set right domain
     slack_archiver_app_challenge_fqdn: "{{ slack_archiver_app_fqdn | regex_search('(^[^\\.]+)') }}.acmechallenges.clojureverse.org" # TODO correct domain
@@ -75,6 +75,11 @@
         upgrade: dist
         update_cache: yes
 
+    - name: Setup and config rtmbot
+      tags: rtmbot
+      import_role:
+        name: plexus.rtmbot
+
     # Unfortunately, the apt version of lein is quite old.
     - name: Set up Leiningen
       import_role:
@@ -97,26 +102,10 @@
       apt:
         autoremove: yes
 
-    # Firewall settings
+    # Firewall settings  # TODO: check if GCP tooling requires any other ports
     - name: Set firewall settings to allow ssh, http/s
       import_role:
         name: firewall
-
-    #########
-    # Now set up the users
-    # - name: Set up plexus
-    #   import_role:
-    #     name: setup_user
-    #   tags: setup-user
-    #   vars:
-    #     username: "plexus"
-    #     full_name: "Arne Brasseur"
-    #     github_username: "plexus"
-
-    # # Harden sshd. Note: This MUST come after at least one sudoable user having a pubkey login.
-    # - name: Harden sshd
-    #   import_role:
-    #     name: harden_sshd
 
     # Now install the programs
     - name: Install memcached
@@ -164,16 +153,18 @@
 
     # TODO: re-enable the Let's encrypt / ACME stuff when we have DNS sorted
 
-    # - name: Prepare for ACME installs
-    #   tags: setup-acme
-    #   import_role:
-    #     name: setup_acme
+    # Generates dhparam.pem
+    - name: Prepare for ACME installs
+      tags: setup-acme
+      import_role:
+        name: setup_acme
 
-    # - name: Ensure gcloud is installed for use in ACME DNS-01 challenge.
-    #   tags: gcloud
-    #   import_role:
-    #     name: setup_gcloud
+    - name: Ensure gcloud is installed for use in ACME DNS-01 challenge.
+      tags: gcloud
+      import_role:
+        name: setup_gcloud
 
+    # LetsEncrypt   # TODO: re-enable when we have the right fqdn
     # - name: Generate and install a LetsEncrypt SSL Cert.
     #   tags: acme
     #   import_role:
@@ -182,7 +173,7 @@
     #     acme_sh_git_update: False
     #     acme_sh_git_clone_dest: "/usr/local/src/acme.sh"
     #     acme_sh_upgrade: False
-    #     acme_sh_account_email: "arne@arnebrasseur.net"
+    #     acme_sh_account_email: "arne@arnebrasseur.net" # TODO: use different email?
     #     acme_sh_copy_certs_to_path: "{{ cert_dir }}"
     #     acme_sh_list_domains: True
     #     acme_sh_default_staging: False
@@ -194,8 +185,7 @@
     #         extra_flags_issue: "--challenge-alias {{ slack_archiver_app_challenge_fqdn }}"
     #         extra_flags_renew: "--challenge-alias {{ slack_archiver_app_challenge_fqdn }}"
 
-    # NGINX
-    # TODO: enable nginx again when we know dns/ssl situation
+    # NGINX        # TODO: enable nginx again when we know dns/ssl situation
 
     # TODO: See also https://michael.lustfield.net/nginx/getting-a-perfect-ssl-labs-score
     # TODO: See also https://gist.github.com/nrollr/9a39bb636a820fb97eec2ed85e473d38
@@ -277,8 +267,3 @@
     #               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     #               proxy_set_header X-Forwarded-Proto $scheme;
     #           }
-
-    - name: Setup and config rtmbot
-      tags: rtmbot
-      import_role:
-        name: plexus.rtmbot
