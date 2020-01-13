@@ -1,5 +1,5 @@
 locals {
-  instance_name = "${terraform.workspace == "default" ? "clojurians-log" : terraform.workspace}"
+  instance_name = "${terraform.workspace == "default" ? "slack-archiver" : terraform.workspace}"
 }
 
 provider "exoscale" {
@@ -23,7 +23,7 @@ data "template_file" "userdata" {
   template = "${file("userdata.sh.tmpl")}"
   vars = {
     # For development / testing, use (uncomment) the lines below
-    # ansible_playbook_params = "--extra-vars \"ansible_python_interpreter=/usr/bin/python3 clojurians_app_fqdn=clojurians-log-staging.clojureverse.org use_demo_logs=true acme_sh_default_staging=true acme_sh_default_force_issue=true\""
+    # ansible_playbook_params = "--extra-vars \"ansible_python_interpreter=/usr/bin/python3 clojurians_app_fqdn=slack-archiver-staging.clojureverse.org use_demo_logs=true acme_sh_default_staging=true acme_sh_default_force_issue=true\""
     # git_clone_params = "--single-branch --branch exoscale-deploy"
     # The following can be used for production
     ansible_playbook_params = "--extra-vars \"ansible_python_interpreter=/usr/bin/python3\" --extra-vars \"clojurians_app_fqdn=${local.instance_name}.clojureverse.org\""

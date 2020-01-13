@@ -1,6 +1,6 @@
 ## Clojurians Log
 
-This deploys the [clojurians-log](https://github.com/clojureverse/clojurians-log-app) app onto Exoscale.
+This deploys the [slack-archiver](https://github.com/clojureverse/slack-archiver-app) app onto Exoscale.
 
 Initially its setup using [Terraform](https://www.terraform.io/) and provisioned by [Ansible](https://www.ansible.com/).
 
@@ -97,8 +97,8 @@ The `terraform_apply script does the following`
 
 - Deploy an instance of the server at Exoscale (using Terraform) or Vagrant, as described above.
 - Clone the master branch of the clojurian-log-app to a local repository on your machine.
-  - `git clone --single-branch --branch master https://github.com/clojureverse/clojurians-log-app`
-  - `cd clojurians-log-app`
+  - `git clone --single-branch --branch master https://github.com/clojureverse/slack-archiver-app`
+  - `cd slack-archiver-app`
 - Add a remote repo that points at the deployed instance with user `clojure_app`.
   The path to the repo is `/var/clojure_app/repo`.
   So, for a local vagrant instance you might use:
@@ -112,7 +112,7 @@ The `terraform_apply script does the following`
   - `git push exoscale  master`
 - Then log into the instance (exoscale or vagrant guest)  as `clojure_app`.
 - On the instance, connect to the app and load up the demo log files, then restart the app.
-  - `echo '(use '"'"'clojurians-log.repl) (load-demo-data! "/var/clojure_app/logs")' | nc -N localhost 50505`
+  - `echo '(use '"'"'slack-archiver.repl) (load-demo-data! "/var/clojure_app/logs")' | nc -N localhost 50505`
   - `sudo systemctl restart clojure_app`
 - On the host running vagrant, you can access the app from the vagrant host at
   - `http://127.0.0.1:2200/` (http)

@@ -37,7 +37,7 @@ ansible-playbook bootstrap.yml -i hosts >> ~/ansible.log
 # Create a script for ansible, so it's easy to re-run at a later date
 echo '#/bin/sh' >> ~/run_ansible
 echo 'cd /root/nebula/slack_archiver/playbooks' >> ~/run_ansible
-echo 'HOME=/root ansible-playbook clojurians-log.yml -i /root/nebula/slack_archiver/playbooks/hosts ${ansible_playbook_params} "$@"' >> ~/run_ansible
+echo 'HOME=/root ansible-playbook slack-archiver.yml -i /root/nebula/slack_archiver/playbooks/hosts ${ansible_playbook_params} "$@"' >> ~/run_ansible
 chmod +x ~/run_ansible
 
 # Setup slack_archiver

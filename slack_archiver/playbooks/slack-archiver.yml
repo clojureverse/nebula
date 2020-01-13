@@ -17,7 +17,7 @@
     database_hostname: "localhost"
     database_port: 5432
     cert_dir: "/etc/ssl/ansible"
-    clojurians_app_fqdn: "clojurians-log.clojureverse.org"
+    clojurians_app_fqdn: "slack-archiver.clojureverse.org"
     clojurians_app_challenge_fqdn: "{{ clojurians_app_fqdn | regex_search('(^[^\\.]+)') }}.acmechallenges.clojureverse.org"
     clojurians_app_http_port: 4242
     datomic_pro_version: 0.9.5561.56
@@ -186,10 +186,10 @@
         clojure_app_health_check_url: "http://localhost:{{clojurians_app_http_port}}/x/x/x/healthcheck"
         clojure_app_service_start_after: datomic.service
 
-    - name: Install and configure the clojurians-log-app
-      tags: clojurians-log
+    - name: Install and configure the slack-archiver-app
+      tags: slack-archiver
       import_role:
-        name: plexus.clojurians-log
+        name: plexus.slack-archiver
 
     - name: Prepare for ACME installs
       tags: setup-acme

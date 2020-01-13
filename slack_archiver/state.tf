@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "clojurians-log"
+    bucket = "slack-archiver"
     key = "tfstates/slack_archiver.tfstate"
     # Dummy for S3 compat.
     region = "de-fra-1"

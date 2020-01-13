@@ -41,15 +41,15 @@
   become: yes
   become_user: "{{ clojure_app_user }}"
   git:
-    repo: "https://github.com/clojureverse/clojurians-log-app.git"
-    dest: "/tmp/clojurians-log-tmp"
+    repo: "https://github.com/clojureverse/slack-archiver-app.git"
+    dest: "/tmp/slack-archiver-tmp"
 
 - name: Push master to the bare repo
   command: "git push {{ clojure_app_repo_dir }} master:master"
   become: yes
   become_user: "{{ clojure_app_user }}"
   args:
-    chdir: "/tmp/clojurians-log-tmp"
+    chdir: "/tmp/slack-archiver-tmp"
     creates: "{{ clojure_app_repo_dir }}/refs/heads/master"
 
 - name: Check out existing logs

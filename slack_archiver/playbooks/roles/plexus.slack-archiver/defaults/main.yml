@@ -1,0 +1,4 @@
+---
+real_logs_repo_url : "git@github.com:plexus/slack-archiver.git"
+demo_logs_repo_url : "git@github.com:clojureverse/slack-archiver-demo-data.git"
+use_demo_logs : false

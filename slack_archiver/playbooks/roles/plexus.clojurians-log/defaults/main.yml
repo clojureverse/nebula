@@ -1,4 +1,0 @@
----
-real_logs_repo_url : "git@github.com:plexus/clojurians-log.git"
-demo_logs_repo_url : "git@github.com:clojureverse/clojurians-log-demo-data.git"
-use_demo_logs : false
