@@ -84,11 +84,6 @@
       apt:
         autoremove: yes
 
-    - name: Setup and config rtmbot
-      tags: rtmbot
-      import_role:
-        name: plexus.rtmbot
-
     # Unfortunately, the apt version of lein is quite old.
     - name: Set up Leiningen
       tags: leiningen
@@ -153,6 +148,14 @@
         clojure_app_main_command: "/usr/local/bin/lein with-profile +production,-dev run {{ clojure_app_home_dir }}/config.edn"
         clojure_app_health_check_url: "http://localhost:{{slack_archiver_app_http_port}}/x/x/x/healthcheck"
         clojure_app_service_start_after: datomic.service
+
+    - name: Setup and config rtmbot
+      tags: rtmbot
+      import_role:
+        name: plexus.rtmbot
+      vars:
+        rtmbot_user: {{ clojure_app_user }}
+        rtmbot_group: {{ clojure_app_user }}
 
     - name: Install and configure the slack-archiver-app
       tags: slack-archiver

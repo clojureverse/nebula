@@ -8,8 +8,8 @@
   template:
     src: templates/rtmbot.conf.j2
     dest: "/var/rtmbot/rtmbot.conf"
-    owner: "{{ clojure_app_user }}"
-    group: "{{ clojure_app_user }}"
+    owner: "{{ rtmbot_user }}"
+    group: "{{ rtmbot_group }}"
     mode: 0644
   tags: rtmbot
 
