@@ -38,11 +38,13 @@
 
     # Keys first, then repos, then the dist-upgrade.
     - name: Add repository for ansible
+      tags: initial_setup
       apt_repository:
         repo: ppa:ansible/ansible
         state: present
 
     - name: Install the lastest versions of listed packages
+      tags: initial_setup
       apt:
         name: "{{ item }}"
         state: latest
@@ -62,6 +64,7 @@
         - unzip                 # for ansible unarchive module
 
     - name: Purge installed apps
+      tags: initial_setup
       apt:
         name: "{{ item }}"
         state: absent
@@ -70,9 +73,16 @@
         - ubuntu-web-launchers  # to remove Amazon icon from launcher
 
     - name: Do a dist-upgrade
+      tags: initial_setup
       apt:
         upgrade: dist
         update_cache: yes
+
+    # Clean up
+    - name: Remove unneeded apt stuff
+      tags: initial_setup
+      apt:
+        autoremove: yes
 
     - name: Setup and config rtmbot
       tags: rtmbot
@@ -81,28 +91,27 @@
 
     # Unfortunately, the apt version of lein is quite old.
     - name: Set up Leiningen
+      tags: leiningen
       import_role:
         name: leiningen
 
     # Too bad we cannot use the alternatives module
     # as it would require listing each java command.
     - name: Check if jdk8 is default
+      tags: jdk
       command: update-alternatives --display java
       register: chkjava
       changed_when: false
       check_mode: false
 
     - name: Choose jdk8 as default for Clojure
+      tags: jdk
       command: update-java-alternatives --set java-1.8.0-openjdk-amd64
       when: chkjava.stdout.find('link currently points to /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java') == -1
 
-    # Clean up
-    - name: Remove unneeded apt stuff
-      apt:
-        autoremove: yes
-
     # Firewall settings  # TODO: check if GCP tooling requires any other ports
     - name: Set firewall settings to allow ssh, http/s
+      tags: firewall
       import_role:
         name: firewall
 
