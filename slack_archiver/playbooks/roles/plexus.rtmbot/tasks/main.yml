@@ -1,13 +1,23 @@
 ---
 - name: Install rtmbot
+  tags: rtmbot
   git:
     repo: "https://github.com/clojureverse/rtmbot.git"
-    dest: "/var/rtmbot"
+    dest: "{{ rtmbot_home }}"
+
+- name: Recursively change ownership of /var/rtmbot
+  tags: rtmbot
+  file:
+    path: "{{ rtmbot_home }}"
+    state: directory
+    recurse: yes
+    owner: "{{ rtmbot_user }}"
+    group: "{{ rtmbot_group }}"
 
 - name: Install rtmbot.conf
   template:
     src: templates/rtmbot.conf.j2
-    dest: "/var/rtmbot/rtmbot.conf"
+    dest: "{{ rtmbot_home }}/rtmbot.conf"
     owner: "{{ rtmbot_user }}"
     group: "{{ rtmbot_group }}"
     mode: 0644
@@ -17,7 +27,17 @@
   template:
     src: templates/rtmbot.service.j2
     dest: "/etc/systemd/system/rtmbot.service"
+    owner: "{{ rtmbot_user }}"
+    group: "{{ rtmbot_group }}"
   tags: rtmbot
+
+- name: Create rtmbot log directory
+  tags: rtmbot
+  file:
+    path: "{{ rtmbot_log_dir }}"
+    state: directory
+    owner: "{{ rtmbot_user }}"
+    group: "{{ rtmbot_group }}"
 
 - name: Start the rtmbot
   service:
