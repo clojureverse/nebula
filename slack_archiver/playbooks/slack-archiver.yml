@@ -51,6 +51,22 @@
         repo: ppa:deadsnakes/ppa
         state: present
 
+    - name: Install python3.6 on xenial
+      when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'xenial'
+      tags: initial_setup
+      apt:
+        name: python3.6
+        state: latest
+        update_cache: yes
+
+    - name: Install python3 elsewhere
+      when: ansible_distribution != 'Ubuntu' or ansible_distribution_release != 'xenial'
+      tags: initial_setup
+      apt:
+        name: python3
+        state: latest
+        update_cache: yes
+
     - name: Install the lastest versions of listed packages
       tags: initial_setup
       apt:
@@ -64,7 +80,6 @@
         - git
         - htop                  # To view processes
         - openjdk-8-jdk         # For Clojure
-        - python3
         - python3-pip
         - python3-apt
         - rlwrap                # For clj
