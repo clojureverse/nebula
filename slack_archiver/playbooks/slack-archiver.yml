@@ -43,6 +43,14 @@
         repo: ppa:ansible/ansible
         state: present
 
+    # 16.04 LTS xenial ships with 3.5, which is too old for rtmbot
+    - name: Add repository for python3.6
+      tags: initial_setup
+      when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'xenial'
+      apt_repository:
+        repo: ppa:deadsnakes/ppa
+        state: present
+
     - name: Install the lastest versions of listed packages
       tags: initial_setup
       apt:
