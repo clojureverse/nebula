@@ -131,12 +131,12 @@
     #         db: "{{ database_name }}"
     #         priv: "ALL"
 
-    - name: Install datomic-pro
-      import_role:
-        name: plexus.datomic-pro
-      tags: datomic
-      vars:
-        datomic_memcached: 127.0.0.1:11211
+    # - name: Install datomic-pro
+    #   import_role:
+    #     name: plexus.datomic-pro
+    #   tags: datomic
+    #   vars:
+    #     datomic_memcached: 127.0.0.1:11211
 
     # Now the Clojurians Log app stuff
     - name: Install the Clojure Web app
