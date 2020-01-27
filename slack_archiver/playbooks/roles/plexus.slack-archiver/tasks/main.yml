@@ -49,6 +49,7 @@
     accept_hostkey: yes
     key_file: "{{ clojure_app_home_dir }}/.ssh/id_rsa"
   tags: git-checkout
+  when: "{{ slack_archiver_auto_load_logs }}|bool"
 
 - name: Import logs
   command: "nc -N localhost {{ clojure_socket_repl_port }} < {{ clojure_app_app_dir }}/repl/production_import.clj > {{ clojure_app_app_dir }}/initial_import.txt"
