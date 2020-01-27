@@ -1,0 +1,18 @@
+---
+- name: Download Clojure CLI
+  tags: clojure-cli
+  get_url:
+    url: "https://download.clojure.org/install/linux-install-{{ clojure_cli_version }}.sh"
+    dest: "/root/clojure-cli-linux-install-{{ clojure_cli_version }}.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Run Clojure CLI installer
+  tags: clojure-cli
+  command: "/root/clojure-cli-linux-install-{{ clojure_cli_version }}.sh"
+  become: yes
+  become_user: root
+  args:
+    chdir: "/root"
+    creates: "/usr/local/bin/clj"
