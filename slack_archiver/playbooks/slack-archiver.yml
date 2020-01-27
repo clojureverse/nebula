@@ -149,6 +149,7 @@
       vars:
         aws_cli_user: "{{ clojure_app_user }}"
         aws_cli_group: "{{ clojure_app_user }}"
+        aws_cli_home_dir: "{{ clojure_app_home_dir }}"
 
     - name: install and start datomic-socks-proxy
       import_role:

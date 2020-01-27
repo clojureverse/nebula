@@ -15,19 +15,19 @@
 
 - name: Set home directory of the user
   set_fact:
-    home_dir: /home/{{ aws_cli_user }}
-  when: "not aws_cli_user == 'root'"
+    aws_cli_home_dir: /home/{{ aws_cli_user }}
+  when: "aws_cli_home_dir == '' and not aws_cli_user == 'root'"
 
 - name: Set home directory for root
   set_fact:
-    home_dir: /root
-  when: "aws_cli_user == 'root'"
+    aws_cli_home_dir: /root
+  when: "aws_cli_home_dir == '' and aws_cli_user == 'root'"
 
 - name: 'Create the AWS config directory'
   tags: 'aws-cli'
   become: 'yes'
   file: >
-    path={{ home_dir }}/.aws
+    path={{ aws_cli_home_dir }}/.aws
     state=directory
     owner={{ aws_cli_user }}
     group={{ aws_cli_group }}
@@ -38,7 +38,7 @@
   become: 'yes'
   template: >
     src=aws_cli_config.j2
-    dest={{ home_dir }}/.aws/config
+    dest={{ aws_cli_home_dir }}/.aws/config
     owner={{ aws_cli_user }}
     group={{ aws_cli_group }}
     mode=0600
@@ -48,7 +48,7 @@
   become: 'yes'
   template: >
     src=aws_cli_credentials.j2
-    dest={{ home_dir }}/.aws/credentials
+    dest={{ aws_cli_home_dir }}/.aws/credentials
     owner={{ aws_cli_user }}
     group={{ aws_cli_group }}
     mode=0600
