@@ -150,6 +150,13 @@
         aws_cli_user: "{{ clojure_app_user }}"
         aws_cli_group: "{{ clojure_app_user }}"
 
+    - name: install and start datomic-socks-proxy
+      import_role: plexus.datomic-socks-proxy
+      tags: datomic-socks-proxy
+      vars:
+        datomic_socks_proxy_user: "{{ clojure_app_user }}"
+        datomic_socks_proxy_dest: "{{ clojure_app_home_dir }}/bin"
+
     # Now the Clojurians Log app stuff
     - name: Install the Clojure Web app
       import_role:

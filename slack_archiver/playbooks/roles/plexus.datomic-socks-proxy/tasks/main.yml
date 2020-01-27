@@ -5,6 +5,13 @@
     name: "autossh"
     state: latest
 
+- name: Ensure a destination directory
+  file:
+    path: "{{ datomic_socks_proxy_dest }}"
+    owner: "{{ datomic_socks_proxy_user }}"
+    owner: "{{ datomic_socks_proxy_user }}"
+    state: directory
+
 - name: Copy datomic-socks-proxy script
   tags: datomic-socks-proxy
   copy:
