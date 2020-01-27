@@ -1,5 +1,4 @@
-{:datomic      {:on-prem {:uri "datomic:sql://{{ clojure_app_name }}?jdbc:{{ datomic_jdbc_type }}://localhost:5432/{{ database_name }}?user={{ database_user }}&password={{ database_password }}"}
-                :cloud   {:server-type   :ion
+{:datomic      {:cloud   {:server-type   :ion
                           :region        "{{ datomic_cloud_aws_region }}"
                           :system        "{{ datomic_cloud_system }}"
                           :creds-profile "{{ datomic_cloud_aws_creds_profile }}"
