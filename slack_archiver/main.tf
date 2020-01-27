@@ -23,7 +23,8 @@ data "template_file" "userdata" {
   template = "${file("userdata.sh.tmpl")}"
   vars = {
     # For development / testing, use (uncomment) the lines below
-    # ansible_playbook_params = "--extra-vars \"ansible_python_interpreter=/usr/bin/python3 slack_archiver_app_fqdn=slack-archiver-staging.clojureverse.org use_demo_logs=true acme_sh_default_staging=true acme_sh_default_force_issue=true\""
+    # ansible_playbook_params = "--extra-vars \"ansible_python_interpreter=/usr/bin/python3 slack_archiver_app_fqdn=slack-archiver-staging.clojureverse.org slack_archiver_logs_repo_url="git@github.com:clojureverse/clojurians-log-demo-data.git" acme_sh_default_staging=true acme_sh_default_force_issue=true\""
+
     # git_clone_params = "--single-branch --branch exoscale-deploy"
     # The following can be used for production
     ansible_playbook_params = "--extra-vars \"ansible_python_interpreter=/usr/bin/python3\" --extra-vars \"slack_archiver_app_fqdn=${local.instance_name}.clojureverse.org\""

@@ -43,6 +43,7 @@
   git:
     repo: "https://github.com/clojureverse/clojurians-log-app.git"
     dest: "/tmp/slack-archiver-tmp"
+    version: "{{ slack_archiver_git_branch }}"
 
 - name: Push master to the bare repo
   command: "git push {{ clojure_app_repo_dir }} master:master"
@@ -57,7 +58,7 @@
   become_user: "{{ clojure_app_user }}"
   become_method: sudo
   git:
-    repo: "{{ demo_logs_repo_url if use_demo_logs else real_logs_repo_url }}"
+    repo: "{{ slack_archiver_logs_repo_url }}"
     dest: "{{ clojure_app_home_dir }}/logs"
     accept_hostkey: yes
     key_file: "{{ clojure_app_home_dir }}/.ssh/id_rsa"

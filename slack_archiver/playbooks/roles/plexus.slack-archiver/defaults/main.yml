@@ -1,4 +1,3 @@
 ---
-real_logs_repo_url : "git@github.com:plexus/clojurians-log.git"   # TODO set this for IT revolution
-demo_logs_repo_url : ""
-use_demo_logs : false
+slack_archiver_logs_repo_url : "git@github.com:plexus/clojurians-log.git"
+slack_archiver_git_branch: "master"
