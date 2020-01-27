@@ -15,7 +15,7 @@
 - name: Copy datomic-socks-proxy script
   tags: datomic-socks-proxy
   copy:
-    src: datomic-socks-proxy
+    src: "templates/datomic-socks-proxy"
     dest: "{{ datomic_socks_proxy_dest }}"
     user: "{{ datomic_socks_proxy_user }}"
     mode: 0755
