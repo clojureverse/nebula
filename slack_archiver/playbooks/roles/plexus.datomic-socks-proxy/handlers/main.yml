@@ -1,6 +1,6 @@
 - name: restart datomic-socks-proxy
   service:
-    name: "datomic-socks-proxy"
+    name: "datomic_socks_proxy"
     state: restarted
     daemon_reload: yes
   become: yes
