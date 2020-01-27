@@ -17,7 +17,7 @@
   copy:
     src: "templates/datomic-socks-proxy"
     dest: "{{ datomic_socks_proxy_dest }}"
-    user: "{{ datomic_socks_proxy_user }}"
+    owner: "{{ datomic_socks_proxy_user }}"
     mode: 0755
 
 - name: Install systemd task for datomic-socks-proxy
