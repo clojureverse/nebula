@@ -107,12 +107,6 @@
       apt:
         autoremove: yes
 
-    # Unfortunately, the apt version of lein is quite old.
-    - name: Set up Leiningen
-      tags: leiningen
-      import_role:
-        name: leiningen
-
     # Too bad we cannot use the alternatives module
     # as it would require listing each java command.
     - name: Check if jdk8 is default
@@ -167,7 +161,7 @@
       tags: clojure-web-app
       vars:
         clojure_app_authorized_keys: "" # TODO: these are the keys that can push new versions of the app
-        clojure_app_main_command: "/usr/local/bin/lein with-profile +production,-dev run {{ clojure_app_home_dir }}/config.edn"
+        clojure_app_main_command: "clojure -A:datomic-cloud -m clojurians-log.application {{ clojure_app_home_dir }}/config.edn"
         clojure_app_health_check_url: "http://localhost:{{slack_archiver_app_http_port}}/x/x/x/healthcheck"
         clojure_app_service_start_after: datomic.service
 
