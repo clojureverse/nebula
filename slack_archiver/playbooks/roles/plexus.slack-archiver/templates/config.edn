@@ -1,8 +1,14 @@
-{:datomic {:uri "datomic:sql://{{ clojure_app_name }}?jdbc:{{ datomic_jdbc_type }}://localhost:5432/{{ database_name }}?user={{ database_user }}&password={{ database_password }}"}
- :http {:port {{ slack_archiver_app_http_port }}
-        :origin "https://{{ slack_archiver_app_fqdn }}"}
- :slack {:api-token "{{ slack_api_token }}"
-         :log-dir "{{ clojure_app_home_dir }}/logs"}
- :cache-time 2678400 ;; ~one month
- :message-page {:cache-time 2678400}
- }
+{:datomic      {:on-prem {:uri "datomic:sql://{{ clojure_app_name }}?jdbc:{{ datomic_jdbc_type }}://localhost:5432/{{ database_name }}?user={{ database_user }}&password={{ database_password }}"}
+                :cloud   {:server-type   :ion
+                          :region        "{{ datomic_cloud_aws_region }}"
+                          :system        "{{ datomic_cloud_system }}"
+                          :creds-profile "{{ datomic_cloud_aws_creds_profile }}"
+                          :endpoint      "{{ datomic_cloud_endpoint }}"
+                          :proxy-port    {{ datomic_cloud_proxy_port }}
+                          :db-name       "{{ datomic_cloud_database_name }}"}}
+ :http         {:port   {{ slack_archiver_app_http_port }}
+                :origin "https://{{ slack_archiver_app_fqdn }}"}
+ :slack        {:api-token "{{ slack_api_token }}"
+                :log-dir   "{{ clojure_app_home_dir }}/logs"}
+ :cache-time   2678400 ;; ~one month
+ :message-page {:cache-time 2678400}}
