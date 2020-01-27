@@ -5,7 +5,7 @@ After=network.target
 [Service]
 WorkingDirectory={{ datomic_socks_proxy_dest }}
 ExecStart={{ datomic_socks_proxy_dest }}/datomic-socks-proxy {{ datomic_socks_proxy_cloud_system }}
-User={{  datomic_socks_proxy_dest }}
+User={{  datomic_socks_proxy_user }}
 Restart=always
 RestartSec=5
 
