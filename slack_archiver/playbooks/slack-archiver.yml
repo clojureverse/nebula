@@ -193,10 +193,10 @@
       import_role:
         name: setup_acme
 
-    - name: Ensure gcloud is installed for use in ACME DNS-01 challenge.
-      tags: gcloud
-      import_role:
-        name: setup_gcloud
+    # - name: Ensure gcloud is installed for use in ACME DNS-01 challenge.
+    #   tags: gcloud
+    #   import_role:
+    #     name: setup_gcloud
 
     # LetsEncrypt   # TODO: re-enable when we have the right fqdn
     # - name: Generate and install a LetsEncrypt SSL Cert.
