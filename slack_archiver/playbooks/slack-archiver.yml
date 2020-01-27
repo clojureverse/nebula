@@ -151,7 +151,8 @@
         aws_cli_group: "{{ clojure_app_user }}"
 
     - name: install and start datomic-socks-proxy
-      import_role: plexus.datomic-socks-proxy
+      import_role:
+        name: plexus.datomic-socks-proxy
       tags: datomic-socks-proxy
       vars:
         datomic_socks_proxy_user: "{{ clojure_app_user }}"
@@ -175,8 +176,8 @@
       vars:
         rtmbot_user: "{{ clojure_app_user }}"
         rtmbot_group: "{{ clojure_app_user }}"
-        rtmbot_log_dir: "{{ clojure_app_home_dir }}/logs/"  
-        rtmbot_log_file: "{{ clojure_app_home_dir }}/rtmbot.log" 
+        rtmbot_log_dir: "{{ clojure_app_home_dir }}/logs/"
+        rtmbot_log_file: "{{ clojure_app_home_dir }}/rtmbot.log"
 
     - name: Install and configure the slack-archiver-app
       tags: slack-archiver
