@@ -1,0 +1,21 @@
+---
+- name: Install autossh
+  tags: datomic-socks-proxy
+  apt:
+    name: "autossh"
+    state: latest
+
+- name: Copy datomic-socks-proxy script
+  tags: datomic-socks-proxy
+  copy:
+    src: datomic-socks-proxy
+    dest: "{{ datomic_socks_proxy_dest }}"
+    user: "{{ datomic_socks_proxy_user }}"
+    mode: 0755
+
+- name: Install systemd task for datomic-socks-proxy
+  tags: datomic-socks-proxy
+  template:
+    src: templates/datomic_socks_proxy.service.j2
+    dest: "/etc/systemd/system/datomic_socks_proxy.service"
+  notify: restart datomic-socks-proxy

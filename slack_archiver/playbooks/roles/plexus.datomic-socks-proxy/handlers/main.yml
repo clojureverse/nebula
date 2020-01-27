@@ -1,0 +1,8 @@
+- name: restart datomic-socks-proxy
+  service:
+    name: "datomic-socks-proxy"
+    state: restarted
+    daemon_reload: yes
+  become: yes
+  become_method: sudo
+  listen: "restart datomic-socks-proxy"

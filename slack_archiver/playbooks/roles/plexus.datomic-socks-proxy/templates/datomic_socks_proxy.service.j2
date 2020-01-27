@@ -1,0 +1,13 @@
+[Unit]
+Description=datomic-socks-proxy
+After=network.target
+
+[Service]
+WorkingDirectory="{{ datomic_socks_proxy_dest }}"
+ExecStart="{{ datomic_socks_proxy_dest }}/datomic-socks-proxy"
+User={{  datomic_socks_proxy_dest }}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
