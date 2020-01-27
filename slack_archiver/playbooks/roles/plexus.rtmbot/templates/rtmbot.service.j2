@@ -3,9 +3,9 @@ Description=Slack RTM logging bot
 After=network.target
 
 [Service]
-WorkingDirectory=/var/rtmbot
-ExecStart=/var/rtmbot/rtmbot.sh
-User={{ clojure_app_user }}
+WorkingDirectory={{ rtmbot_home }}
+ExecStart={{ rtmbot_home }}/rtmbot.sh
+User={{ rtmbot_user }}
 Restart=always
 RestartSec=5
 

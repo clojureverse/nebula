@@ -1,0 +1,7 @@
+---
+rtmbot_user: rtmbot
+rtmbot_group: rtmbot
+rtmbot_home: /var/rtmbot
+rtmbot_slack_api_token: ""
+rtmbot_log_dir: "{{ rtmbot_home }}/logs/"
+rtmbot_log_file: "{{ rtmbot_home }}/rtmbot.log"
