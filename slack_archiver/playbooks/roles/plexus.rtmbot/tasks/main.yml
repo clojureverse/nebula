@@ -6,16 +6,17 @@
     dest: "{{ rtmbot_home }}"
 
 - name: Create rtmbot app group
+  tags: rtmbot
   group:
     name: "{{ rtmbot_user }}"
     state: present
 
 - name: Create rtmbot app user
+  tags: rtmbot
   user:
     name: "{{ rtmbot_user }}"
-    state: present
-    home: "{{ rtmbot_home }}"
     group: "{{ rtmbot_group }}"
+    state: present
 
 - name: Recursively change ownership of /var/rtmbot
   tags: rtmbot
