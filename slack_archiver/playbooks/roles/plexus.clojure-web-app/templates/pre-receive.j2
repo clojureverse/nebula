@@ -52,6 +52,7 @@ def try_exec!(*args)
 end
 
 def systemctl!(op)
+  try_exec!("sudo", "/bin/systemctl", "daemon-reload", "{{ clojure_app_name }}")
   try_exec!("sudo", "/bin/systemctl", op.to_s, "{{ clojure_app_name }}")
 end
 
