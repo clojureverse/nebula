@@ -50,6 +50,4 @@ if [ "$?" -ne 0 ] || [ "${BASTION_IP}" == None ]; then
     exit 1
 fi
 
-AUTOSSH_ARGS='-M 0 -o "ServerAliveInterval 5" -o "ServerAliveCountMax 3"'
-
-autossh $AUTOSSH_ARGS -v -o IdentitiesOnly=yes -i $PK -CND ${SOCKS_PORT:=8182} ec2-user@${BASTION_IP}
+autossh -M 0 -o "ServerAliveInterval 5" -o "ServerAliveCountMax 3" -v -o IdentitiesOnly=yes -i $PK -CND ${SOCKS_PORT:=8182} ec2-user@${BASTION_IP}
