@@ -158,6 +158,7 @@
       vars:
         datomic_socks_proxy_user: "{{ clojure_app_user }}"
         datomic_socks_proxy_dest: "{{ clojure_app_home_dir }}/bin"
+        datomic_socks_proxy_cloud_system: "{{ datomic_cloud_system }}"
 
     # Now the Clojurians Log app stuff
     - name: Install the Clojure Web app
