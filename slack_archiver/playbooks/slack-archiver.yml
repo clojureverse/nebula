@@ -27,6 +27,7 @@
     clojure_app_env_vars: |
       CLOJURE_OPTS="-J-Dclojure.server.myrepl={:port,{{ clojure_socket_repl_port }},:accept,clojure.core.server/repl} -J-Xmx800m -J-Xms450m -J-Ddatomic.ObjectCacheMax=450m -J-Ddatomic.memcachedServers=127.0.0.1:11211"
     # -Dcom.sun.management.jmxremote.port=17264 -Dcom.sun.management.jmxremote.rmi.port=17264
+    clojure_app_user: clojure_app
 
   tasks:
     # - name: Set up librato first so we have eyes
