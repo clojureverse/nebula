@@ -26,14 +26,14 @@
     src: templates/gcloud_credentials.j2
     dest: "{{ gcloud_keys_file }}"
     mode: 0600
-  when: not chk_gcp_cred_db.stat.exists
+  # when: not chk_gcp_cred_db.stat.exists
 - name: Authenticate with GCP and update credentials db
   command: gcloud --quiet auth activate-service-account --key-file="{{ gcloud_keys_file }}" --project="{{ gcloud_project_id }}"
   args:
     creates: "{{ gcloud_credentials_db_file }}"
-  when:
-    - not chk_gcp_cred_db.stat.exists
-    - not ansible_check_mode
+  # when:
+  #   - not chk_gcp_cred_db.stat.exists
+  #   - not ansible_check_mode
 - name: Ensure that the temporary gcloud keys file is removed
   file:
     name: "{{ gcloud_keys_file }}"
