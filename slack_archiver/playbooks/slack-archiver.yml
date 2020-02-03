@@ -21,11 +21,11 @@
     # slack_archiver_app_challenge_fqdn: "{{ slack_archiver_app_fqdn | regex_search('(^[^\\.]+)') }}.acmechallenges.clojureverse.org"
     slack_archiver_app_http_port: 4242
     datomic_pro_version: 0.9.5561.56
-    datomic_object_cache_max: 1g
-    datomic_transactor_max_heap: 1782m
+    datomic_object_cache_max: 450m
+    datomic_transactor_max_heap: 450m
     clojure_socket_repl_port: 50505
     clojure_app_env_vars: |
-      CLOJURE_OPTS="-J-Dclojure.server.myrepl={:port,{{ clojure_socket_repl_port }},:accept,clojure.core.server/repl} -J-Xmx1782m -J-Xms1g -J-Ddatomic.ObjectCacheMax=1g -J-Ddatomic.memcachedServers=127.0.0.1:11211"
+      CLOJURE_OPTS="-J-Dclojure.server.myrepl={:port,{{ clojure_socket_repl_port }},:accept,clojure.core.server/repl} -J-Xmx800m -J-Xms450m -J-Ddatomic.ObjectCacheMax=450m -J-Ddatomic.memcachedServers=127.0.0.1:11211"
     # -Dcom.sun.management.jmxremote.port=17264 -Dcom.sun.management.jmxremote.rmi.port=17264
 
   tasks:
