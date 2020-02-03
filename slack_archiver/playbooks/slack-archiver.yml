@@ -85,6 +85,7 @@
         - rlwrap                # For clj
         - screen
         - unzip                 # for ansible unarchive module
+        - netcat-openbsd
 
     - name: Purge installed apps
       tags: initial_setup

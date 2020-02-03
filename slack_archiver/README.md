@@ -112,7 +112,7 @@ The `terraform_apply script does the following`
   - `git push exoscale  master`
 - Then log into the instance (exoscale or vagrant guest)  as `clojure_app`.
 - On the instance, connect to the app and load up the demo log files, then restart the app.
-  - `echo '(use '"'"'slack-archiver.repl) (load-demo-data! "/var/clojure_app/logs")' | nc -N localhost 50505`
+  - `echo '(use '"'"'slack-archiver.repl) (load-demo-data! "/var/clojure_app/logs")' | nc -q 0 localhost 50505`
   - `sudo systemctl restart clojure_app`
 - On the host running vagrant, you can access the app from the vagrant host at
   - `http://127.0.0.1:2200/` (http)
