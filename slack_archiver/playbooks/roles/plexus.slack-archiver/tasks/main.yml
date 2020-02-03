@@ -31,6 +31,11 @@
     dest: "/tmp/slack-archiver-tmp"
     version: "{{ slack_archiver_git_branch }}"
 
+- name: Pre-fetch maven deps so the next step doesn't time out
+  command: "clj -Sdeps"
+  become: yes
+  become_user: "{{ clojure_app_user }}"
+
 - name: Push master to the bare repo
   command: "git push {{ clojure_app_repo_dir }} master:master"
   become: yes

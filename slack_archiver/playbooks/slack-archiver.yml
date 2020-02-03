@@ -145,25 +145,25 @@
     # clojure-app -> datomic-socks-proxy -> aws -> clojure-app user
     - name: Create Clojure app group
       group:
-        name: "{{ clojure_app_user }}"
+        name: "clojure_app"
         state: present
 
     - name: Create Clojure app user
       user:
-        name: "{{ clojure_app_user }}"
+        name: "clojure_app"
         state: present
-        home: "{{ clojure_app_home_dir }}"
+        home: "/var/clojure_app"
         generate_ssh_key: yes
-        group: "{{ clojure_app_user }}"
+        group: "clojure_app"
         groups:
           - systemd-journal
 
     - name: Create Clojure app home dir
       file:
-        path: "{{ clojure_app_home_dir }}"
+        path: "/var/clojure_app"
         state: directory
-        owner: "{{ clojure_app_user }}"
-        group: "{{ clojure_app_user }}"
+        owner: "clojure_app"
+        group: "clojure_app"
 
     # Needed for datomic-socks-proxy
     - name: Install the aws CLI
@@ -171,17 +171,17 @@
         name: a2i2.aws-cli
       tags: aws-cli
       vars:
-        aws_cli_user: "{{ clojure_app_user }}"
-        aws_cli_group: "{{ clojure_app_user }}"
-        aws_cli_home_dir: "{{ clojure_app_home_dir }}"
+        aws_cli_user: "clojure_app"
+        aws_cli_group: "clojure_app"
+        aws_cli_home_dir: "/var/clojure_app"
 
     - name: install and start datomic-socks-proxy
       import_role:
         name: plexus.datomic-socks-proxy
       tags: datomic-socks-proxy
       vars:
-        datomic_socks_proxy_user: "{{ clojure_app_user }}"
-        datomic_socks_proxy_dest: "{{ clojure_app_home_dir }}/bin"
+        datomic_socks_proxy_user: "clojure_app"
+        datomic_socks_proxy_dest: "/var/clojure_app/bin"
         datomic_socks_proxy_cloud_system: "{{ datomic_cloud_system }}"
 
     # Now the Clojurians Log app stuff
