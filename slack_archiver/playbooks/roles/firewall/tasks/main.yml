@@ -1,6 +1,10 @@
 ---
 # Firewall settings
 # TODO: Will need to open other ports as well.
+- name: Install ufw
+  apt:
+    name: ufw
+    state: latest
 - name: Enable firewall
   ufw:
     state: enabled
