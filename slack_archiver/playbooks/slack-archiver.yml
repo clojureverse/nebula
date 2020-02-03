@@ -17,8 +17,8 @@
     # database_hostname: "localhost"
     # database_port: 5432
     cert_dir: "/etc/ssl/ansible"
-    slack_archiver_app_fqdn: "slack-archiver.clojureverse.org"
-    slack_archiver_app_challenge_fqdn: "{{ slack_archiver_app_fqdn | regex_search('(^[^\\.]+)') }}.acmechallenges.clojureverse.org"
+    # slack_archiver_app_fqdn: "slack-archiver.clojureverse.org"
+    # slack_archiver_app_challenge_fqdn: "{{ slack_archiver_app_fqdn | regex_search('(^[^\\.]+)') }}.acmechallenges.clojureverse.org"
     slack_archiver_app_http_port: 4242
     datomic_pro_version: 0.9.5561.56
     datomic_object_cache_max: 1g
