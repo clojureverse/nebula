@@ -37,11 +37,11 @@
     #     librato_logging_use_syslog: true
 
     # Keys first, then repos, then the dist-upgrade.
-    - name: Add repository for ansible
-      tags: initial_setup
-      apt_repository:
-        repo: ppa:ansible/ansible
-        state: present
+    # - name: Add repository for ansible
+    #   tags: initial_setup
+    #   apt_repository:
+    #     repo: ppa:ansible/ansible
+    #     state: present
 
     # 16.04 LTS xenial ships with 3.5, which is too old for rtmbot
     - name: Add repository for python3.6
@@ -74,7 +74,7 @@
         state: latest
         update_cache: yes
       loop:
-        - ansible
+        # - ansible
         - curl
         - emacs
         - git
@@ -141,18 +141,29 @@
       vars:
         memcached_memory_limit: 4096
 
-    # Now the Clojurians Log app stuff
-    # Do this first since this creates the user and home directories
-    - name: Install the Clojure Web app
-      import_role:
-        name: plexus.clojure-web-app
-      tags: clojure-web-app
-      vars:
-        clojure_app_authorized_keys: "" # TODO: these are the keys that can push new versions of the app
-        clojure_app_main_command: "{{ clojure_app_app_dir }}/bin/run_prod {{ clojure_app_home_dir }}/config.edn"
-        clojure_app_prep_command: "{{ clojure_app_app_dir }}/bin/prep_prod"
-        clojure_app_health_check_url: "http://localhost:{{slack_archiver_app_http_port}}/x/x/x/healthcheck"
-        # clojure_app_service_start_after: datomic.service
+    # Copied here because otherwise we have a circular dependency:
+    # clojure-app -> datomic-socks-proxy -> aws -> clojure-app user
+    - name: Create Clojure app group
+      group:
+        name: "{{ clojure_app_user }}"
+        state: present
+
+    - name: Create Clojure app user
+      user:
+        name: "{{ clojure_app_user }}"
+        state: present
+        home: "{{ clojure_app_home_dir }}"
+        generate_ssh_key: yes
+        group: "{{ clojure_app_user }}"
+        groups:
+          - systemd-journal
+
+    - name: Create Clojure app home dir
+      file:
+        path: "{{ clojure_app_home_dir }}"
+        state: directory
+        owner: "{{ clojure_app_user }}"
+        group: "{{ clojure_app_user }}"
 
     # Needed for datomic-socks-proxy
     - name: Install the aws CLI
@@ -173,6 +184,18 @@
         datomic_socks_proxy_dest: "{{ clojure_app_home_dir }}/bin"
         datomic_socks_proxy_cloud_system: "{{ datomic_cloud_system }}"
 
+    # Now the Clojurians Log app stuff
+    # Do this first since this creates the user and home directories
+    - name: Install the Clojure Web app
+      import_role:
+        name: plexus.clojure-web-app
+      tags: clojure-web-app
+      vars:
+        clojure_app_authorized_keys: "" # TODO: these are the keys that can push new versions of the app
+        clojure_app_main_command: "{{ clojure_app_app_dir }}/bin/run_prod {{ clojure_app_home_dir }}/config.edn"
+        clojure_app_prep_command: "{{ clojure_app_app_dir }}/bin/prep_prod"
+        clojure_app_health_check_url: "http://localhost:{{slack_archiver_app_http_port}}/x/x/x/healthcheck"
+        # clojure_app_service_start_after: datomic.service
 
     - name: Setup and config rtmbot
       tags: rtmbot
