@@ -217,8 +217,8 @@
         acme_sh_default_dns_provider_api_keys: { "FOO": "BAR" } # Cannot be empty
         acme_sh_domains:
           - domains: ["{{ slack_archiver_app_fqdn }}"]
-            # extra_flags_issue: "--challenge-alias {{ slack_archiver_app_challenge_fqdn }}"
-            # extra_flags_renew: "--challenge-alias {{ slack_archiver_app_challenge_fqdn }}"
+            extra_flags_issue: "--challenge-alias {{ slack_archiver_app_challenge_fqdn }}"
+            extra_flags_renew: "--challenge-alias {{ slack_archiver_app_challenge_fqdn }}"
 
     # NGINX        # TODO: enable nginx again when we know dns/ssl situation
 
