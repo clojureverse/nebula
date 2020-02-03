@@ -28,5 +28,5 @@
 
 - name: Start datomic
   service:
-    name: datomic-socks-proxy
+    name: datomic_socks_proxy
     state: started
