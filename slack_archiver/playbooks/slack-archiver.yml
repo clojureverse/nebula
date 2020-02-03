@@ -7,8 +7,8 @@
     DEBIAN_FRONTEND: "noninteractive"
 
   vars_files:
-    - vars/itrev.secrets.yml
-
+    # - vars/itrev.secrets.yml
+    - vars/devops_summit.secrets.yml
   become: true
 
   vars:
