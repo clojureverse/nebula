@@ -2,3 +2,4 @@
 slack_archiver_logs_repo_url : "git@github.com:plexus/clojurians-log.git"
 slack_archiver_git_branch: "master"
 slack_archiver_auto_load_logs: true
+slack_archiver_application_title: "Slack Archive"

@@ -10,4 +10,5 @@
  :slack        {:api-token "{{ slack_api_token }}"
                 :log-dir   "{{ clojure_app_home_dir }}/logs"}
  :cache-time   2678400 ;; ~one month
- :message-page {:cache-time 2678400}}
+ :message-page {:cache-time 2678400}
+ :application {:title "{{ slack_archiver_application_title }}"}}
