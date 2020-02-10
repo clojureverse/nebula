@@ -214,6 +214,8 @@
       tags: slack-archiver
       import_role:
         name: plexus.slack-archiver
+      vars:
+        slack_archiver_incoming_logs_directory: /var/rtmbot/logs
 
     # TODO: re-enable the Let's encrypt / ACME stuff when we have DNS sorted
 

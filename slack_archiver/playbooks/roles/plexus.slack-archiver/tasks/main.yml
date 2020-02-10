@@ -56,3 +56,11 @@
   when: slack_archiver_auto_load_logs|bool
   args:
     creates: "{{ clojure_app_app_dir }}/initial_import.txt"
+
+- name: Sync log cron job
+  tags: cron
+  cron:
+    name: "sync slack logs"
+    minute: "0"
+    user: "{{ clojure_app_user }}"
+    command: "SLACK_LOG_SOURCE=\"{{ slack_archiver_incoming_logs_directory }}\" SLACK_LOG_DEST=\"{{ slack_archiver_logs_repo_url }}\" {{ clojure_app_app_dir }}/bin/sync_logs"
