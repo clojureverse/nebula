@@ -62,5 +62,5 @@
   cron:
     name: "sync slack logs"
     minute: "0"
-    job: "SLACK_LOG_SOURCE=\"{{ slack_archiver_incoming_logs_directory }}\" SLACK_LOG_DEST=\"{{ clojure_app_home_dir }}/logs\" {{ clojure_app_app_dir }}/bin/sync_logs"
+    job: "SLACK_LOG_SOURCE=\"{{ slack_archiver_incoming_logs_directory }}\" SLACK_LOG_DEST=\"{{ clojure_app_home_dir }}/logs/logs\" {{ clojure_app_app_dir }}/bin/sync_logs"
     user: "{{ clojure_app_user }}"
