@@ -15,7 +15,7 @@ This is a work in progress and is subject to significant changes over time.
   for this.
 - Create your own SSH keypair on the Console: [guide](https://community.exoscale.com/documentation/compute/ssh-keypairs/)
 - Install Terraform v0.12.6+.
-- Download the latest Exoscale terraform provider for your OS from [here](https://github.com/exoscale/terraform-provider-exoscale/releases).
+- Download the latest Exoscale terraform provider for your OS from [here](https://github.com/terraform-providers/terraform-provider-exoscale).
 - Decompress the archive and follow [the plugin installation](https://www.terraform.io/docs/configuration/providers.html#third-party-plugins).
 - Install [GPG](https://gnupg.org/download/)
 - Send your GPG public key ID to either of the maintainers to be added to the secrets file.
